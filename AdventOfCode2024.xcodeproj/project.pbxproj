@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		498ABD522CD58E8D00C61A33 /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		498ABD732CD62B5500C61A33 /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
+		49C19B1A2CD68E160063CFCA /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,12 +32,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		49C19B0B2CD63B120063CFCA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libAOCTools.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		498ABD4A2CD58E7800C61A33 /* Day1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day1; sourceTree = BUILT_PRODUCTS_DIR; };
 		498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AOCToolsTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		49C19B0D2CD63B120063CFCA /* Day21 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day21; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -53,6 +64,11 @@
 		498ABD702CD62B5500C61A33 /* AOCToolsTest */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AOCToolsTest;
+			sourceTree = "<group>";
+		};
+		49C19B0E2CD63B120063CFCA /* Day21 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Day21;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -81,6 +97,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		49C19B0A2CD63B120063CFCA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49C19B1A2CD68E160063CFCA /* libAOCTools.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -90,6 +114,7 @@
 				498ABD3E2CD58E4600C61A33 /* AOCTools */,
 				498ABD702CD62B5500C61A33 /* AOCToolsTest */,
 				498ABD4B2CD58E7800C61A33 /* Day1 */,
+				49C19B0E2CD63B120063CFCA /* Day21 */,
 				498ABD512CD58E8D00C61A33 /* Frameworks */,
 				498ABD302CD58DD300C61A33 /* Products */,
 			);
@@ -101,6 +126,7 @@
 				498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */,
 				498ABD4A2CD58E7800C61A33 /* Day1 */,
 				498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */,
+				49C19B0D2CD63B120063CFCA /* Day21 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -192,6 +218,28 @@
 			productReference = 498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		49C19B0C2CD63B120063CFCA /* Day21 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49C19B132CD63B120063CFCA /* Build configuration list for PBXNativeTarget "Day21" */;
+			buildPhases = (
+				49C19B092CD63B120063CFCA /* Sources */,
+				49C19B0A2CD63B120063CFCA /* Frameworks */,
+				49C19B0B2CD63B120063CFCA /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				49C19B0E2CD63B120063CFCA /* Day21 */,
+			);
+			name = Day21;
+			packageProductDependencies = (
+			);
+			productName = Day21;
+			productReference = 49C19B0D2CD63B120063CFCA /* Day21 */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -210,6 +258,9 @@
 						CreatedOnToolsVersion = 16.1;
 					};
 					498ABD6E2CD62B5500C61A33 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					49C19B0C2CD63B120063CFCA = {
 						CreatedOnToolsVersion = 16.1;
 					};
 				};
@@ -231,6 +282,7 @@
 				498ABD3C2CD58E4600C61A33 /* AOCTools */,
 				498ABD6E2CD62B5500C61A33 /* AOCToolsTest */,
 				498ABD492CD58E7800C61A33 /* Day1 */,
+				49C19B0C2CD63B120063CFCA /* Day21 */,
 			);
 		};
 /* End PBXProject section */
@@ -261,6 +313,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		498ABD6B2CD62B5500C61A33 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49C19B092CD63B120063CFCA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -505,6 +564,24 @@
 			};
 			name = Release;
 		};
+		49C19B112CD63B120063CFCA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		49C19B122CD63B120063CFCA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -540,6 +617,15 @@
 			buildConfigurations = (
 				498ABD772CD62B5500C61A33 /* Debug */,
 				498ABD782CD62B5500C61A33 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49C19B132CD63B120063CFCA /* Build configuration list for PBXNativeTarget "Day21" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49C19B112CD63B120063CFCA /* Debug */,
+				49C19B122CD63B120063CFCA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
