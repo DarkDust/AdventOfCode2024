@@ -16,6 +16,21 @@ struct Point: Hashable, Equatable {
         self.x = x
         self.y = y
     }
+    
+    public
+    func _rawHashValue(seed: Int) -> Int {
+        // This can have a huge impact on runtime performance of Set operations! Some runtime
+        // durations from my system with AOC 2023 Day 21, part 2:
+        //
+        // * Swift compiler generated `Hashable`: ~2.2s
+        // * x ^ y: ~1160s (!)
+        // * (x * 10_000) + y: ~0.7s
+        // * (x * 8_192) + y: probably >1000s
+        //
+        // In general, it looks like a multiplicator that's a power of 2 or is near one is bad.
+        seed + (x * 1_000_000) + y
+    }
+    
 }
 
 
