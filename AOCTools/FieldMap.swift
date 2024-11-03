@@ -127,46 +127,14 @@ extension FieldMap {
 public
 extension FieldMap {
     
-    /// How to calculate neighbouring field coordinates.
-    enum NeighbourScheme {
-        /// Only consider the four neighours to the north, east, south, and west.
-        case cross
-        
-        /// Consider the eight neighbours to the N, NE, E, SE, S, SW, W, and NW.
-        case box
-    }
-    
-    
     /// Get neighouring fields.
     ///
     /// - parameter coord: The field coordinate to get the neighbours for.
     /// - parameter scheme: Which coordinates to consider.
     /// - parameter wrap: Whether to wrap around the edges. If false, coordinates that would be
     ///   out of bounds get discarded.
-    func neighbours(for coord: Coord, scheme: NeighbourScheme, wrap: Bool) -> [(Coord, Field)] {
-        let candidates: [Coord]
-        
-        switch scheme {
-        case .cross:
-            candidates = [
-                Coord(x: coord.x, y: coord.y - 1),
-                Coord(x: coord.x + 1, y: coord.y),
-                Coord(x: coord.x, y: coord.y + 1),
-                Coord(x: coord.x - 1, y: coord.y),
-            ]
-            
-        case .box:
-            candidates = [
-                Coord(x: coord.x,     y: coord.y - 1),
-                Coord(x: coord.x + 1, y: coord.y - 1),
-                Coord(x: coord.x + 1, y: coord.y),
-                Coord(x: coord.x + 1, y: coord.y + 1),
-                Coord(x: coord.x,     y: coord.y + 1),
-                Coord(x: coord.x - 1, y: coord.y + 1),
-                Coord(x: coord.x - 1, y: coord.y),
-                Coord(x: coord.x - 1, y: coord.y - 1),
-            ]
-        }
+    func neighbours(for coord: Coord, scheme: Coord.NeighbourScheme, wrap: Bool) -> [(Coord, Field)] {
+        let candidates = coord.neighbours(scheme: scheme)
         
         let coordinates: [Coord]
         if wrap {

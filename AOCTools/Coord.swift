@@ -34,20 +34,9 @@ struct Coord: Hashable, Equatable {
 }
 
 
+// MARK: Normalization
 public
 extension Coord {
-    
-    /// Returns the coord to the "left" of the receiver.
-    var left: Coord { Coord(x: x - 1, y: y) }
-    
-    /// Returns the coord to the "right" of the receiver.
-    var right: Coord { Coord(x: x + 1, y: y) }
-    
-    /// Returns the coord "above" the receiver.
-    var up: Coord { Coord(x: x, y: y - 1) }
-    
-    /// Returns the coord "below" the receiver.
-    var down: Coord { Coord(x: x, y: y + 1) }
     
     /// Normalize coordinates given some maximum values.
     /// The resulting coordinates are thus within the range `0 ..< maxX` and `0 ..< maxY`.
@@ -61,4 +50,82 @@ extension Coord {
         Coord(x: self.x.modulo(maximum.x), y: self.y.modulo(maximum.y))
     }
     
+}
+
+
+// MARK: Neighbours
+public
+extension Coord {
+    
+    /// How to calculate neighbouring field coordinates.
+    enum NeighbourScheme {
+        /// Only consider the four neighours to the north, east, south, and west.
+        case cross
+        
+        /// Only consider the four neighours to the NE, SE, SW, and NW.
+        case diagonal
+        
+        /// Consider the eight neighbours to the N, NE, E, SE, S, SW, W, and NW.
+        case box
+    }
+    
+    /// Get neighouring coordinates.
+    ///
+    /// - parameter scheme: Which coordinates to consider.
+    func neighbours(scheme: NeighbourScheme) -> [Coord] {
+        switch scheme {
+        case .cross:
+            return [
+                Coord(x: self.x,     y: self.y - 1),
+                Coord(x: self.x + 1, y: self.y),
+                Coord(x: self.x,     y: self.y + 1),
+                Coord(x: self.x - 1, y: self.y),
+            ]
+            
+        case .diagonal:
+            return [
+                Coord(x: self.x + 1, y: self.y - 1),
+                Coord(x: self.x + 1, y: self.y + 1),
+                Coord(x: self.x - 1, y: self.y + 1),
+                Coord(x: self.x - 1, y: self.y - 1),
+            ]
+            
+        case .box:
+            return [
+                Coord(x: self.x,     y: self.y - 1),
+                Coord(x: self.x + 1, y: self.y - 1),
+                Coord(x: self.x + 1, y: self.y),
+                Coord(x: self.x + 1, y: self.y + 1),
+                Coord(x: self.x,     y: self.y + 1),
+                Coord(x: self.x - 1, y: self.y + 1),
+                Coord(x: self.x - 1, y: self.y),
+                Coord(x: self.x - 1, y: self.y - 1),
+            ]
+        }
+    }
+
+    /// Returns the coord "above" the receiver.
+    var north: Coord { Coord(x: x, y: y - 1) }
+    
+    /// Returns the coord "above and to the right" of the receiver.
+    var northEast: Coord { Coord(x: x + 1, y: y - 1) }
+    
+    /// Returns the coord to the "right" of the receiver.
+    var east: Coord { Coord(x: x + 1, y: y) }
+    
+    /// Returns the coord "below and to the right" of the receiver.
+    var southEast: Coord { Coord(x: x + 1, y: y + 1) }
+    
+    /// Returns the coord "below" the receiver.
+    var south: Coord { Coord(x: x, y: y + 1) }
+    
+    /// Returns the coord "below" the receiver.
+    var southWest: Coord { Coord(x: x - 1, y: y + 1) }
+    
+    /// Returns the coord to the "left" of the receiver.
+    var west: Coord { Coord(x: x - 1, y: y) }
+    
+    /// Returns the coord "above and to the left" of the receiver.
+    var northWest: Coord { Coord(x: x - 1, y: y - 1) }
+
 }
