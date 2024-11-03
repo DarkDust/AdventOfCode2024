@@ -10,6 +10,7 @@
 		498ABD522CD58E8D00C61A33 /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		498ABD732CD62B5500C61A33 /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		49C19B1A2CD68E160063CFCA /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
+		49CC38482CD7A5CC00482D01 /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +42,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		49CC383C2CD7A54E00482D01 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +58,7 @@
 		498ABD4A2CD58E7800C61A33 /* Day1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day1; sourceTree = BUILT_PRODUCTS_DIR; };
 		498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AOCToolsTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		49C19B0D2CD63B120063CFCA /* Day21 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day21; sourceTree = BUILT_PRODUCTS_DIR; };
+		49CC383E2CD7A54E00482D01 /* Day3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day3; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +80,11 @@
 		49C19B0E2CD63B120063CFCA /* Day21 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Day21;
+			sourceTree = "<group>";
+		};
+		49CC383F2CD7A54E00482D01 /* Day3 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Day3;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -105,6 +121,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		49CC383B2CD7A54E00482D01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49CC38482CD7A5CC00482D01 /* libAOCTools.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -114,6 +138,7 @@
 				498ABD3E2CD58E4600C61A33 /* AOCTools */,
 				498ABD702CD62B5500C61A33 /* AOCToolsTest */,
 				498ABD4B2CD58E7800C61A33 /* Day1 */,
+				49CC383F2CD7A54E00482D01 /* Day3 */,
 				49C19B0E2CD63B120063CFCA /* Day21 */,
 				498ABD512CD58E8D00C61A33 /* Frameworks */,
 				498ABD302CD58DD300C61A33 /* Products */,
@@ -127,6 +152,7 @@
 				498ABD4A2CD58E7800C61A33 /* Day1 */,
 				498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */,
 				49C19B0D2CD63B120063CFCA /* Day21 */,
+				49CC383E2CD7A54E00482D01 /* Day3 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -240,6 +266,28 @@
 			productReference = 49C19B0D2CD63B120063CFCA /* Day21 */;
 			productType = "com.apple.product-type.tool";
 		};
+		49CC383D2CD7A54E00482D01 /* Day3 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49CC38442CD7A54E00482D01 /* Build configuration list for PBXNativeTarget "Day3" */;
+			buildPhases = (
+				49CC383A2CD7A54E00482D01 /* Sources */,
+				49CC383B2CD7A54E00482D01 /* Frameworks */,
+				49CC383C2CD7A54E00482D01 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				49CC383F2CD7A54E00482D01 /* Day3 */,
+			);
+			name = Day3;
+			packageProductDependencies = (
+			);
+			productName = Day3;
+			productReference = 49CC383E2CD7A54E00482D01 /* Day3 */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -263,6 +311,9 @@
 					49C19B0C2CD63B120063CFCA = {
 						CreatedOnToolsVersion = 16.1;
 					};
+					49CC383D2CD7A54E00482D01 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 				};
 			};
 			buildConfigurationList = 498ABD2A2CD58DD200C61A33 /* Build configuration list for PBXProject "AdventOfCode2024" */;
@@ -283,6 +334,7 @@
 				498ABD6E2CD62B5500C61A33 /* AOCToolsTest */,
 				498ABD492CD58E7800C61A33 /* Day1 */,
 				49C19B0C2CD63B120063CFCA /* Day21 */,
+				49CC383D2CD7A54E00482D01 /* Day3 */,
 			);
 		};
 /* End PBXProject section */
@@ -320,6 +372,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		49C19B092CD63B120063CFCA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49CC383A2CD7A54E00482D01 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -584,6 +643,24 @@
 			};
 			name = Release;
 		};
+		49CC38422CD7A54E00482D01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		49CC38432CD7A54E00482D01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -628,6 +705,15 @@
 			buildConfigurations = (
 				49C19B112CD63B120063CFCA /* Debug */,
 				49C19B122CD63B120063CFCA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49CC38442CD7A54E00482D01 /* Build configuration list for PBXNativeTarget "Day3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49CC38422CD7A54E00482D01 /* Debug */,
+				49CC38432CD7A54E00482D01 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

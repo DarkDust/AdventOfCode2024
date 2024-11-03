@@ -10,13 +10,18 @@ import RegexBuilder
 
 
 public
-func runPart(_ input: Input, block: ([Substring]) -> Void) {
+func runPart(_ input: Input, block: ([Substring]) throws -> Void) {
     let string = input.string
     let start = Date()
     
     // Consider preparing the input as part of the "run" when it comes to measuring the duration.
     let lines = string.split(whereSeparator: \.isNewline)
-    block(lines)
+    do {
+        try block(lines)
+    } catch {
+        print("Error: \(error)")
+        exit(1)
+    }
     
     let elapsed = -start.timeIntervalSinceNow
     
