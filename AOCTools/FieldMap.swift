@@ -213,23 +213,6 @@ public extension FieldMap where Field: CustomStringConvertible {
 
 // MARK: Other protocol conformances
 
-extension FieldMap: Equatable where Field: Equatable {
-    
-    public
-    static func == (lhs: FieldMap, rhs: FieldMap) -> Bool {
-        if lhs.width != rhs.width || lhs.height != rhs.height { return false }
-        return lhs.fields == rhs.fields
-    }
-    
-}
+extension FieldMap: Equatable where Field: Equatable { }
 
-extension FieldMap: Hashable where Field: Hashable {
-    
-    public
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(width)
-        hasher.combine(height)
-        hasher.combine(fields)
-    }
-    
-}
+extension FieldMap: Hashable where Field: Hashable { }
