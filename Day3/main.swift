@@ -8,7 +8,7 @@
 import Foundation
 import AOCTools
 
-// Day 1 from 2023 for testing
+// Day 3 from 2023 for testing
 
 enum Field: FieldProtocol, Equatable {
     case empty

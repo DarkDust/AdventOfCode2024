@@ -7,7 +7,7 @@
 
 /// Coordinate with integer elements.
 public
-struct Coord: Hashable, Equatable {
+struct Coord: Hashable {
     public let x: Int
     public let y: Int
     
@@ -103,7 +103,23 @@ extension Coord {
             ]
         }
     }
-
+    
+    
+    /// Returns the neighbour in the given direction.
+    func neighbour(direction: Direction) -> Coord {
+        switch direction {
+        case .north: return north
+        case .northEast: return northEast
+        case .east: return east
+        case .southEast: return southEast
+        case .south: return south
+        case .southWest: return southWest
+        case .west: return west
+        case .northWest: return northWest
+        }
+    }
+    
+    
     /// Returns the coord "above" the receiver.
     var north: Coord { Coord(x: x, y: y - 1) }
     
