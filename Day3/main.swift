@@ -62,7 +62,7 @@ runPart(.input) {
             
             hasSymbolNeighbour = hasSymbolNeighbour
                 || map.neighbours(for: coord, scheme: .box, wrap: false)
-                    .contains(where: { $0.1 == .star || $0.1 == .otherSymbol })
+                    .contains(where: { $0.field == .star || $0.field == .otherSymbol })
         }
     }
     
@@ -96,8 +96,8 @@ runPart(.input) {
             
             starCoordinates = starCoordinates
                 ?? map.neighbours(for: coord, scheme: .box, wrap: false)
-                    .first(where: { $0.1 == .star })
-                    .map { $0.0 }
+                    .first(where: { $0.field == .star })
+                    .map { $0.coord }
         }
     }
     

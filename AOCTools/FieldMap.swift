@@ -133,7 +133,9 @@ extension FieldMap {
     /// - parameter scheme: Which coordinates to consider.
     /// - parameter wrap: Whether to wrap around the edges. If false, coordinates that would be
     ///   out of bounds get discarded.
-    func neighbours(for coord: Coord, scheme: Coord.NeighbourScheme, wrap: Bool) -> [(Coord, Field)] {
+    func neighbours(for coord: Coord, scheme: Coord.NeighbourScheme, wrap: Bool)
+        -> [(coord: Coord, field: Field)]
+    {
         let candidates = coord.neighbours(scheme: scheme)
         
         let coordinates: [Coord]
@@ -188,7 +190,7 @@ struct FieldMapIterator<Field: FieldProtocol>: Sequence, IteratorProtocol {
     var index: Int
     
     public
-    mutating func next() -> (Coord, Field)? {
+    mutating func next() -> (coord: Coord, field: Field)? {
         guard index < map.fields.count else { return nil }
         let coord = Coord(x: index % map.width, y: index / map.width)
         let field = map.fields[index]
