@@ -47,7 +47,7 @@ runPart(.input) {
     var hasSymbolNeighbour = false
     var numbers: [Int] = []
     
-    for (point, field) in map {
+    for (coord, field) in map {
         switch field {
         case .empty, .star, .otherSymbol:
             if number > 0, hasSymbolNeighbour {
@@ -61,7 +61,7 @@ runPart(.input) {
             number += digit
             
             hasSymbolNeighbour = hasSymbolNeighbour
-                || map.neighbours(for: point, scheme: .box, wrap: false)
+                || map.neighbours(for: coord, scheme: .box, wrap: false)
                     .contains(where: { $0.1 == .star || $0.1 == .otherSymbol })
         }
     }
@@ -77,10 +77,10 @@ runPart(.input) {
     
     let map: FieldMap<Field> = try FieldMap(lines)
     var number = 0
-    var starCoordinates: Point?
-    var gears: [Point: [Int]] = [:]
+    var starCoordinates: Coord?
+    var gears: [Coord: [Int]] = [:]
     
-    for (point, field) in map {
+    for (coord, field) in map {
         switch field {
         case .empty, .star, .otherSymbol:
             if number > 0, let starCoordinates {
@@ -95,7 +95,7 @@ runPart(.input) {
             number += digit
             
             starCoordinates = starCoordinates
-                ?? map.neighbours(for: point, scheme: .box, wrap: false)
+                ?? map.neighbours(for: coord, scheme: .box, wrap: false)
                     .first(where: { $0.1 == .star })
                     .map { $0.0 }
         }

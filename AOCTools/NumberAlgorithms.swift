@@ -69,7 +69,7 @@ extension NumberAlgorithms {
     }
     
     /// Calculate a Lagrange interpolation of a given input sequence.
-    static func interpolate(sequence: some Sequence<Point>, step: Int) -> Int {
+    static func interpolate(sequence: some Sequence<Coord>, step: Int) -> Int {
         var result: Double = 0
         let xi = Double(step)
         

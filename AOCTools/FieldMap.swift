@@ -86,12 +86,12 @@ extension FieldMap {
     
     
     /// Direct, unchecked field getter.
-    subscript(point: Point) -> Field {
+    subscript(coord: Coord) -> Field {
         get {
-            fields[point.y * width + point.x]
+            fields[coord.y * width + coord.x]
         }
         set {
-            fields[point.y * width + point.x] = newValue
+            fields[coord.y * width + coord.x] = newValue
         }
     }
     
@@ -103,8 +103,8 @@ extension FieldMap {
     
     
     /// Wrapping field getter.
-    func get(point: Point) -> Field {
-        fields[point.y.modulo(height) * width + point.x.modulo(width)]
+    func get(_ coord: Coord) -> Field {
+        fields[coord.y.modulo(height) * width + coord.x.modulo(width)]
     }
     
     
@@ -115,8 +115,8 @@ extension FieldMap {
     
     
     /// Wrapping field setter.
-    func set(point: Point, field: Field) {
-        fields[point.y.modulo(height) * width + point.x.modulo(width)] = field
+    func set(_ coord: Coord, field: Field) {
+        fields[coord.y.modulo(height) * width + coord.x.modulo(width)] = field
     }
     
     
@@ -139,39 +139,39 @@ extension FieldMap {
     
     /// Get neighouring fields.
     ///
-    /// - parameter point: The field coordinate to get the neighbours for.
+    /// - parameter coord: The field coordinate to get the neighbours for.
     /// - parameter scheme: Which coordinates to consider.
     /// - parameter wrap: Whether to wrap around the edges. If false, coordinates that would be
     ///   out of bounds get discarded.
-    func neighbours(for point: Point, scheme: NeighbourScheme, wrap: Bool) -> [(Point, Field)] {
-        let candidates: [Point]
+    func neighbours(for coord: Coord, scheme: NeighbourScheme, wrap: Bool) -> [(Coord, Field)] {
+        let candidates: [Coord]
         
         switch scheme {
         case .cross:
             candidates = [
-                Point(x: point.x, y: point.y - 1),
-                Point(x: point.x + 1, y: point.y),
-                Point(x: point.x, y: point.y + 1),
-                Point(x: point.x - 1, y: point.y),
+                Coord(x: coord.x, y: coord.y - 1),
+                Coord(x: coord.x + 1, y: coord.y),
+                Coord(x: coord.x, y: coord.y + 1),
+                Coord(x: coord.x - 1, y: coord.y),
             ]
             
         case .box:
             candidates = [
-                Point(x: point.x,     y: point.y - 1),
-                Point(x: point.x + 1, y: point.y - 1),
-                Point(x: point.x + 1, y: point.y),
-                Point(x: point.x + 1, y: point.y + 1),
-                Point(x: point.x,     y: point.y + 1),
-                Point(x: point.x - 1, y: point.y + 1),
-                Point(x: point.x - 1, y: point.y),
-                Point(x: point.x - 1, y: point.y - 1),
+                Coord(x: coord.x,     y: coord.y - 1),
+                Coord(x: coord.x + 1, y: coord.y - 1),
+                Coord(x: coord.x + 1, y: coord.y),
+                Coord(x: coord.x + 1, y: coord.y + 1),
+                Coord(x: coord.x,     y: coord.y + 1),
+                Coord(x: coord.x - 1, y: coord.y + 1),
+                Coord(x: coord.x - 1, y: coord.y),
+                Coord(x: coord.x - 1, y: coord.y - 1),
             ]
         }
         
-        let coordinates: [Point]
+        let coordinates: [Coord]
         if wrap {
             coordinates = candidates.map {
-                Point(x: $0.x.modulo(width), y: $0.y.modulo(height))
+                Coord(x: $0.x.modulo(width), y: $0.y.modulo(height))
             }
         } else {
             coordinates = candidates.filter {
@@ -220,12 +220,12 @@ struct FieldMapIterator<Field: FieldProtocol>: Sequence, IteratorProtocol {
     var index: Int
     
     public
-    mutating func next() -> (Point, Field)? {
+    mutating func next() -> (Coord, Field)? {
         guard index < map.fields.count else { return nil }
-        let point = Point(x: index % map.width, y: index / map.width)
+        let coord = Coord(x: index % map.width, y: index / map.width)
         let field = map.fields[index]
         index += 1
-        return (point, field)
+        return (coord, field)
     }
     
 }

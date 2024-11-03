@@ -11,14 +11,14 @@ import AOCTools
 // Day 21 from 2023 for testing
 
 struct Map {
-    let positions: Set<Point>
-    let rocks: Set<Point>
+    let positions: Set<Coord>
+    let rocks: Set<Coord>
     let xLen: Int
     let yLen: Int
     
     init(lines: [some StringProtocol]) {
-        var rocks: Set<Point> = []
-        var positions: Set<Point> = []
+        var rocks: Set<Coord> = []
+        var positions: Set<Coord> = []
         var xLen: Int = 0
         var yLen: Int = 0
         
@@ -28,8 +28,8 @@ struct Map {
             
             for (x, char) in line.enumerated() {
                 switch char {
-                case "#": rocks.insert(Point(x: x, y: y))
-                case "S": positions.insert(Point(x: x, y: y))
+                case "#": rocks.insert(Coord(x: x, y: y))
+                case "S": positions.insert(Coord(x: x, y: y))
                 default: break
                 }
             }
@@ -41,15 +41,15 @@ struct Map {
         self.positions = positions
     }
     
-    init (positions: Set<Point>, rocks: Set<Point>, xLen: Int, yLen: Int) {
+    init (positions: Set<Coord>, rocks: Set<Coord>, xLen: Int, yLen: Int) {
         self.positions = positions
         self.rocks = rocks
         self.xLen = xLen
         self.yLen = yLen
     }
     
-    func step(nextSteps: (Point, (Point) -> Void) -> Void) -> Map {
-        var newPositions: Set<Point> = Set(minimumCapacity: self.positions.count * 4)
+    func step(nextSteps: (Coord, (Coord) -> Void) -> Void) -> Map {
+        var newPositions: Set<Coord> = Set(minimumCapacity: self.positions.count * 4)
         
         for position in self.positions {
             nextSteps(position) {

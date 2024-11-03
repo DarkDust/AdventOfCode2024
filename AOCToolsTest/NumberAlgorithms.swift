@@ -42,8 +42,8 @@ struct NumberAlgorithmsTests {
         ]
         #expect(NumberAlgorithms.interpolate(sequence: data, step: 3) == 35)
         
-        let data2: [Point] = [
-            Point(x: 0, y: 2), Point(x: 1, y: 3), Point(x: 2, y: 12), Point(x: 5, y: 147)
+        let data2: [Coord] = [
+            Coord(x: 0, y: 2), Coord(x: 1, y: 3), Coord(x: 2, y: 12), Coord(x: 5, y: 147)
         ]
         #expect(NumberAlgorithms.interpolate(sequence: data2, step: 3) == 35)
     }
