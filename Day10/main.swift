@@ -78,7 +78,7 @@ extension FieldMap<Field> {
         return false
     }
     
-    func clearNonPath(path: [Coord]) {
+    mutating func clearNonPath(path: [Coord]) {
         let pathSet = Set(path)
         
         for (coord, _) in self where !pathSet.contains(coord) {
@@ -128,7 +128,7 @@ runPart(.input) {
 runPart(.input) {
     (lines) in
     
-    let map: FieldMap<Field> = try FieldMap(lines)
+    var map: FieldMap<Field> = try FieldMap(lines)
     let start = try map.findStart()
     
     for candidate in map.neighbours(for: start, scheme: .cross, wrap: false) {

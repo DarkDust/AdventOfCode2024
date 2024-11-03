@@ -73,16 +73,16 @@ runPart(.input) {
         map = map.step {
             (position, push) in
             if position.x > 0 {
-                push(position.left)
+                push(position.west)
             }
             if position.x + 1 < map.xLen {
-                push(position.right)
+                push(position.east)
             }
             if position.y > 0 {
-                push(position.up)
+                push(position.north)
             }
             if position.y + 1 < map.yLen {
-                push(position.down)
+                push(position.south)
             }
         }
     }
@@ -104,10 +104,10 @@ runPart(.input) {
     for i in 1 ... x3 {
         map = map.step {
             (position, push) in
-            push(position.left)
-            push(position.right)
-            push(position.up)
-            push(position.down)
+            push(position.west)
+            push(position.east)
+            push(position.north)
+            push(position.south)
         }
         
         switch i {

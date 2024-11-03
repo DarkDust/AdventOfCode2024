@@ -21,7 +21,7 @@ enum FieldMapError: Error {
 
 /// A two-dimensional array of fields.
 public
-class FieldMap<Field: FieldProtocol> {
+struct FieldMap<Field: FieldProtocol> {
     
     /// Fields as a contiguous array.
     fileprivate
@@ -36,6 +36,7 @@ class FieldMap<Field: FieldProtocol> {
     let height: Int
     
     
+    /// Initialize the map by parsing the given lines.
     public
     init(_ lines: [any StringProtocol]) throws {
         self.width = lines.first?.count ?? 0
@@ -60,11 +61,12 @@ class FieldMap<Field: FieldProtocol> {
     }
     
     
-    private
-    init (width: Int, height: Int, fields: [Field]) {
+    /// Initialize the map with a width, height, and initial value for all fields.
+    public
+    init(width: Int, height: Int, repeating: Field) {
         self.width = width
         self.height = height
-        self.fields = fields
+        self.fields = Array(repeating: repeating, count: width * height)
     }
     
 }
@@ -109,13 +111,13 @@ extension FieldMap {
     
     
     /// Wrapping field setter.
-    func set(x: Int, y: Int, field: Field) {
+    mutating func set(x: Int, y: Int, field: Field) {
         fields[y.modulo(height) * width + x.modulo(width)] = field
     }
     
     
     /// Wrapping field setter.
-    func set(_ coord: Coord, field: Field) {
+    mutating func set(_ coord: Coord, field: Field) {
         fields[coord.y.modulo(height) * width + coord.x.modulo(width)] = field
     }
     
@@ -152,18 +154,6 @@ extension FieldMap {
         return coordinates.map {
             ($0, self[$0])
         }
-    }
-    
-}
-
-
-// MARK: Miscellaneous
-public
-extension FieldMap {
-    
-    /// Create a copy for the receiver.
-    func copy() -> FieldMap {
-        FieldMap(width: width, height: height, fields: fields)
     }
     
 }
@@ -219,4 +209,27 @@ public extension FieldMap where Field: CustomStringConvertible {
         return result
     }
 
+}
+
+// MARK: Other protocol conformances
+
+extension FieldMap: Equatable where Field: Equatable {
+    
+    public
+    static func == (lhs: FieldMap, rhs: FieldMap) -> Bool {
+        if lhs.width != rhs.width || lhs.height != rhs.height { return false }
+        return lhs.fields == rhs.fields
+    }
+    
+}
+
+extension FieldMap: Hashable where Field: Hashable {
+    
+    public
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(width)
+        hasher.combine(height)
+        hasher.combine(fields)
+    }
+    
 }
