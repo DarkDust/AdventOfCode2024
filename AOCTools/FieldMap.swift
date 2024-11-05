@@ -156,6 +156,29 @@ extension FieldMap {
         }
     }
     
+    
+    /// Get a neighouring field.
+    ///
+    /// - parameter coord: The field coordinate to get the neighbours for.
+    /// - parameter direction: Direction to move to.
+    /// - parameter wrap: Whether to wrap around the edges. If false, coordinates that would be
+    ///   out of bounds get discarded.
+    func neighbour(for coord: Coord, direction: Direction, wrap: Bool)
+        -> (coord: Coord, field: Field)?
+    {
+        let candidate = coord.neighbour(direction: direction)
+        if wrap {
+            let coordinate = candidate.normalized(maxX: self.width, maxY: self.height)
+            return (coordinate, self[coordinate])
+            
+        } else if candidate.x >= 0 && candidate.x < width && candidate.y >= 0 && candidate.y < height {
+            return (candidate, self[candidate])
+            
+        } else {
+            return nil
+        }
+    }
+    
 }
 
 

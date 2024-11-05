@@ -145,3 +145,29 @@ extension Coord {
     var northWest: Coord { Coord(x: x - 1, y: y - 1) }
 
 }
+
+
+// MARK: Distance
+public
+extension Coord {
+    
+    /// Calculate the distance between coordinates with only right-angled moves from one coordinate
+    /// to the other.
+    /// In other words, calculate the distance with only north, east, south, and west movements.
+    func rightAngledDistance(to other: Coord) -> Int {
+        (max(self.x, other.x) - min(self.x, other.x)) + (max(self.y, other.y) - min(self.y, other.y))
+    }
+    
+}
+
+
+// MARK: Debugging
+@DebugDescription
+extension Coord: CustomDebugStringConvertible {
+    
+    public
+    var debugDescription: String {
+        "(\(x), \(y))"
+    }
+    
+}
