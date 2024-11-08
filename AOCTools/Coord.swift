@@ -5,6 +5,9 @@
 //  Created by Marc Haisenko on 2024-11-02.
 //
 
+import Foundation
+
+
 /// Coordinate with integer elements.
 public
 struct Coord: Hashable {
@@ -156,6 +159,39 @@ extension Coord {
     /// In other words, calculate the distance with only north, east, south, and west movements.
     func rightAngledDistance(to other: Coord) -> Int {
         (max(self.x, other.x) - min(self.x, other.x)) + (max(self.y, other.y) - min(self.y, other.y))
+    }
+    
+}
+
+
+// MARK: Area
+public
+extension RandomAccessCollection where Element == Coord {
+    
+    /// Interpret the sequence as a closed polygon and calculate its area.
+    /// Only works correctly for polygons with right-angles.
+    func integerPolygonArea() -> Int {
+        // This only works correctly for polygons with right-angles. It already fails with this
+        // polygon: https://commons.wikimedia.org/wiki/File:Pick_theorem_simple.svg
+        
+        var area = 0
+        var perimeter = 0
+        let count = self.count
+        for i in 0 ..< count {
+            let j = (i + 1) % count
+            let n1 = self[self.index(self.startIndex, offsetBy: i)]
+            let n2 = self[self.index(self.startIndex, offsetBy: j)]
+            area += n1.x * n2.y
+            area -= n1.y * n2.x
+            perimeter +=
+                Int((pow(Double(n1.x - n2.x), 2) + pow(Double(n1.y - n2.y), 2)).squareRoot())
+        }
+
+        area = abs(area) / 2 // Until here, it's the Shoelace formula.
+        
+        // Apply Pick's theorem to get the actual area.
+        area += (perimeter / 2) + 1
+        return area
     }
     
 }

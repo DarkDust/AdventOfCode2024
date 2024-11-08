@@ -43,4 +43,34 @@ struct CoordTests {
                     coord.south, coord.southWest, coord.west, coord.northWest])
     }
     
+    
+    @Test
+    func area() {
+        let polygon1: [Coord] = [
+            Coord(x: 0, y: 0),
+            Coord(x: 1, y: 0),
+            Coord(x: 1, y: 1),
+            Coord(x: 0, y: 1),
+        ]
+        
+        #expect(polygon1.integerPolygonArea() == 4)
+        
+        // ..###. 3
+        // ###.## 6
+        // #....# 6
+        // ###### 6
+        let polygon2: [Coord] = [
+            Coord(x: 0, y: 0),
+            Coord(x: 0, y: 2),
+            Coord(x: 2, y: 2),
+            Coord(x: 2, y: 3),
+            Coord(x: 4, y: 3),
+            Coord(x: 4, y: 2),
+            Coord(x: 5, y: 2),
+            Coord(x: 5, y: 0),
+        ]
+        
+        #expect(polygon2.integerPolygonArea() == 21)
+    }
+    
 }
