@@ -94,12 +94,12 @@ struct HeatLossMap {
         let start1 = Crucible(coord: self.start, direction: .east, steps: 0)
         let start2 = Crucible(coord: self.start, direction: .south, steps: 0)
         
-        let score = astar.findPath(starts: [start1, start2], isGoal: { $0.coord == self.end })
+        let score = astar.findPathScore(starts: [start1, start2], isGoal: { $0.coord == self.end })
         guard let score else {
             throw HeatLossError.noPathFound
         }
         
-        return score.cost
+        return score
     }
     
 }

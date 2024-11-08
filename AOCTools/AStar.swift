@@ -5,8 +5,6 @@
 //  Created by Marc Haisenko on 2024-11-04.
 //
 
-import Collections
-
 
 /// A* path finding algorithm.
 public
@@ -46,31 +44,29 @@ struct AStar<Node: Hashable> {
         starts: [Node],
         isGoal: (Node) -> Bool
     ) -> (path: [Node], cost: Int)? {
-        var openSet: Deque<FNode> = []
+        let openSet: RedBlackTree<Int, Node> = []
         var gScore: [Node: Int] = [:]
         var fScore: [Node: Int] = [:]
         var cameFrom: [Node: Node] = [:]
         
         for start in starts {
-            openSet.append(FNode(node: start, fScore: 0))
+            openSet.insert(0, value: start)
         }
         
-        while !openSet.isEmpty {
-            let current = openSet.removeFirst()
-            
-            if isGoal(current.node) {
+        while let current = openSet.removeMinimum() {
+            if isGoal(current.value) {
                 // Reconstruct path
-                assert(gScore[current.node] != nil)
-                let path = self.reconstructPath(cameFrom: cameFrom, current: current.node)
-                return (path, gScore[current.node] ?? 0)
+                assert(gScore[current.value] != nil)
+                let path = self.reconstructPath(cameFrom: cameFrom, current: current.value)
+                return (path, gScore[current.value] ?? 0)
             }
             
-            for neighbour in self.neighbours(current.node) {
-                let tentativeGScore = gScore[current.node, default: 0]
-                    + self.cost(current.node, neighbour)
+            for neighbour in self.neighbours(current.value) {
+                let tentativeGScore = gScore[current.value, default: 0]
+                    + self.cost(current.value, neighbour)
                 guard tentativeGScore < gScore[neighbour, default: .max] else { continue }
                 
-                cameFrom[neighbour] = current.node
+                cameFrom[neighbour] = current.value
                 gScore[neighbour] = tentativeGScore
                 
                 let newFScore = tentativeGScore + estimateCost(neighbour)
@@ -79,14 +75,11 @@ struct AStar<Node: Hashable> {
                         continue
                     }
                     
-                    if let index = openSet.firstIndex(of: FNode(node: neighbour, fScore: oldFScore)) {
-                        openSet.remove(at: index)
-                    }
+                    openSet.remove(key: oldFScore, value: neighbour)
                 }
                 fScore[neighbour] = newFScore
                 
-                let insertion = openSet.binarySearch(predicate: { $0.fScore < newFScore })
-                openSet.insert(FNode(node: neighbour, fScore: newFScore), at: insertion)
+                openSet.insert(newFScore, value: neighbour)
             }
         }
         
@@ -102,32 +95,33 @@ struct AStar<Node: Hashable> {
         starts: [Node],
         isGoal: (Node) -> Bool
     ) -> Int? {
-        // NOTE: This currently also skips updating the fScore, which works for the 2023-Day21
-        // scenario.
+        // NOTE: This currently also skips updating the fScore, which works for the 2023-Day17
+        // scenario but might give wrong results in other scenarios.
         
-        var openSet: Heap<FNode> = []
+        let openSet: RedBlackTree<Int, Node> = []
         var gScore: [Node: Int] = [:]
         
         for start in starts {
-            openSet.insert(FNode(node: start, fScore: estimateCost(start)))
+            openSet.insert(0, value: start)
+            openSet.insert(0, value: start)
         }
         
-        while let current = openSet.popMin() {
-            if isGoal(current.node) {
+        while let current = openSet.removeMinimum() {
+            if isGoal(current.value) {
                 // Reconstruct path
-                assert(gScore[current.node] != nil)
-                return gScore[current.node] ?? 0
+                assert(gScore[current.value] != nil)
+                return gScore[current.value] ?? 0
             }
             
-            for neighbour in self.neighbours(current.node) {
-                let tentativeGScore = gScore[current.node, default: 0]
-                    + self.cost(current.node, neighbour)
+            for neighbour in self.neighbours(current.value) {
+                let tentativeGScore = gScore[current.value, default: 0]
+                    + self.cost(current.value, neighbour)
                 guard tentativeGScore < gScore[neighbour, default: .max] else { continue }
                 
                 gScore[neighbour] = tentativeGScore
                 let fScore = tentativeGScore + estimateCost(neighbour)
                 
-                openSet.insert(FNode(node: neighbour, fScore: fScore))
+                openSet.insert(fScore, value: neighbour)
             }
         }
         

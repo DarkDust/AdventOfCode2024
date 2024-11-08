@@ -177,6 +177,56 @@ extension RedBlackTree {
 }
 
 
+public
+extension RedBlackTree where Value: Equatable {
+    
+    /// Remove an entry with exact value.
+    /// Use this when there can be multiple values for a given key.
+    @discardableResult
+    func remove(key: Key, value: Value) -> Element? {
+        var candidates: [Node] = []
+        
+        var cursor: Node? = self.root
+        while let node = cursor {
+            guard node.key == key else {
+                if node.key < key {
+                    cursor = node.leftChild
+                } else {
+                    cursor = node.rightChild
+                }
+                continue
+            }
+            
+            var stack: [Node] = [node]
+            while !stack.isEmpty {
+                let additionalNode = stack.removeLast()
+                if additionalNode.key != key {
+                    continue
+                }
+                
+                candidates.append(additionalNode)
+                if let leftChild = additionalNode.leftChild {
+                    stack.append(leftChild)
+                }
+                if let rightChild = additionalNode.rightChild {
+                    stack.append(rightChild)
+                }
+            }
+            break
+        }
+        
+        guard let index = candidates.firstIndex(where: { $0.value == value }) else {
+            return nil
+        }
+        
+        let found = candidates[index]
+        self.delete(node: found)
+        return (found.key, found.value)
+    }
+    
+}
+
+
 // MARK: Private methods
 private
 extension RedBlackTree {
