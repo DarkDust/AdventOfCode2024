@@ -674,6 +674,7 @@
 				);
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DISABLE_SAFETY_CHECKS = YES;
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;

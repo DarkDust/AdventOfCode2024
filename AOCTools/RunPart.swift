@@ -11,7 +11,10 @@ import RegexBuilder
 
 public
 func runPart(_ input: Input, repetitions: Int = 1, block: ([Substring]) throws -> Void) {
-    let string = input.string
+    var string = input.string
+    string.makeContiguousUTF8()
+    assert(string.isContiguousUTF8, "Cannot make the string contiguous, performance would be bad")
+    
     let start = Date()
     
     // Consider preparing the input as part of the "run" when it comes to measuring the duration.

@@ -42,20 +42,30 @@ struct FieldMap<Field: FieldProtocol> {
         self.width = lines.first?.count ?? 0
         self.height = lines.count
         var fields: [Field] = []
+        fields.reserveCapacity(width * height)
         
         for line in lines {
             guard line.count == width else {
                 throw FieldMapError.invalidInput
             }
             
-            for character in line {
-                guard let field = Field.parse(character) else {
-                    throw FieldMapError.invalidInput
-                }
+            try line.utf8.withContiguousStorageIfAvailable {
+                (buffer) in
                 
-                fields.append(field)
+                for character in buffer {
+                    guard let field = Field.parse(Character(Unicode.Scalar(character))) else {
+                        throw FieldMapError.invalidInput
+                    }
+                    
+                    fields.append(field)
+                }
             }
         }
+        
+        // The only reason for the `field` to not have the expected size is because
+        // `line.utf8.withContiguousStorageIfAvailable` didn't get its storage and thus didn't
+        // execute its body.
+        assert(fields.count == width * height, "Failed to get continuous storage for input")
         
         self.fields = fields
     }
