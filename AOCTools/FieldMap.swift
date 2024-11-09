@@ -135,6 +135,7 @@ extension FieldMap {
     /// - parameter scheme: Which coordinates to consider.
     /// - parameter wrap: Whether to wrap around the edges. If false, coordinates that would be
     ///   out of bounds get discarded.
+    @inlinable
     func neighbours(for coord: Coord, scheme: Coord.NeighbourScheme, wrap: Bool)
         -> [(coord: Coord, field: Field)]
     {
@@ -163,6 +164,7 @@ extension FieldMap {
     /// - parameter direction: Direction to move to.
     /// - parameter wrap: Whether to wrap around the edges. If false, coordinates that would be
     ///   out of bounds get discarded.
+    @inlinable
     func neighbour(for coord: Coord, direction: Direction, wrap: Bool)
         -> (coord: Coord, field: Field)?
     {

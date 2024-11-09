@@ -43,12 +43,14 @@ extension Coord {
     
     /// Normalize coordinates given some maximum values.
     /// The resulting coordinates are thus within the range `0 ..< maxX` and `0 ..< maxY`.
+    @inlinable
     func normalized(maxX: Int, maxY: Int) -> Coord {
         Coord(x: self.x.modulo(maxX), y: self.y.modulo(maxY))
     }
     
     /// Normalize coordinates given some maximum values.
     /// The resulting coordinates are thus within the range `0 ..< maxX` and `0 ..< maxY`.
+    @inlinable
     func normalized(maximum: Coord) -> Coord {
         Coord(x: self.x.modulo(maximum.x), y: self.y.modulo(maximum.y))
     }
@@ -75,6 +77,7 @@ extension Coord {
     /// Get neighouring coordinates.
     ///
     /// - parameter scheme: Which coordinates to consider.
+    @inlinable
     func neighbours(scheme: NeighbourScheme) -> [Coord] {
         switch scheme {
         case .cross:
@@ -109,6 +112,7 @@ extension Coord {
     
     
     /// Returns the neighbour in the given direction.
+    @inlinable
     func neighbour(direction: Direction) -> Coord {
         switch direction {
         case .north: return north
@@ -124,27 +128,35 @@ extension Coord {
     
     
     /// Returns the coord "above" the receiver.
+    @inlinable
     var north: Coord { Coord(x: x, y: y - 1) }
     
     /// Returns the coord "above and to the right" of the receiver.
+    @inlinable
     var northEast: Coord { Coord(x: x + 1, y: y - 1) }
     
     /// Returns the coord to the "right" of the receiver.
+    @inlinable
     var east: Coord { Coord(x: x + 1, y: y) }
     
     /// Returns the coord "below and to the right" of the receiver.
+    @inlinable
     var southEast: Coord { Coord(x: x + 1, y: y + 1) }
     
     /// Returns the coord "below" the receiver.
+    @inlinable
     var south: Coord { Coord(x: x, y: y + 1) }
     
     /// Returns the coord "below" the receiver.
+    @inlinable
     var southWest: Coord { Coord(x: x - 1, y: y + 1) }
     
     /// Returns the coord to the "left" of the receiver.
+    @inlinable
     var west: Coord { Coord(x: x - 1, y: y) }
     
     /// Returns the coord "above and to the left" of the receiver.
+    @inlinable
     var northWest: Coord { Coord(x: x - 1, y: y - 1) }
 
 }
@@ -157,6 +169,7 @@ extension Coord {
     /// Calculate the distance between coordinates with only right-angled moves from one coordinate
     /// to the other.
     /// In other words, calculate the distance with only north, east, south, and west movements.
+    @inlinable
     func rightAngledDistance(to other: Coord) -> Int {
         (max(self.x, other.x) - min(self.x, other.x)) + (max(self.y, other.y) - min(self.y, other.y))
     }

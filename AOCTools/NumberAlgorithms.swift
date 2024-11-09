@@ -9,6 +9,7 @@ public
 extension FixedWidthInteger {
     
     /// Calculates the Greatest Common Divisor (GCD) of the receiver and another number.
+    @inlinable
     func greatestCommonDivisor(with other: Self) -> Self {
         let remainder = self % other
         guard remainder != 0 else { return other }
@@ -16,6 +17,7 @@ extension FixedWidthInteger {
     }
     
     /// Calculates the Least Common Multiple (LCM) of the receiver and another number.
+    @inlinable
     func leastCommonMultiple(with other: Self) -> Self {
         self * (other / self.greatestCommonDivisor(with: other))
     }
@@ -25,6 +27,7 @@ extension FixedWidthInteger {
     /// Swift's `%` operator returns the remainder. The difference affects negative quotients:
     /// * `-7 % 3 == -1`
     /// * `(-7).modulo(3) == 2`
+    @inlinable
     func modulo(_ other: Self) -> Self {
         let r = self % other
         if r >= 0 {
