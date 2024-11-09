@@ -184,6 +184,48 @@ extension FieldMap {
 }
 
 
+// MARK: Raycasting
+public
+extension FieldMap {
+    
+    /// Count the fields inside a shape.
+    ///
+    /// - parameter countBorder: Whether to count the border itself as well.
+    /// - parameter isVerticalBorder: Closure returning whether a field is considered a vertical
+    ///   border.
+    /// - parameter shouldCount: Closure whether a field that seems to be on the inside should be
+    ///   counted.
+    func horizontalRaycast(
+        countBorder: Bool = false,
+        isVerticalBorder: (Coord, Field) -> Bool,
+        shouldCount: (Coord, Field) -> Bool) -> Int
+    {
+        var count = 0
+        var index = 0
+        for y in 0 ..< self.height {
+            var isInside = false
+            
+            for x in 0 ..< self.width {
+                let field = self.fields[index]
+                let coord = Coord(x: x, y: y)
+                if isVerticalBorder(coord, field) {
+                    isInside = !isInside
+                    if countBorder { count += 1 }
+                } else if isInside, shouldCount(coord, field) {
+                    count += 1
+                }
+                
+                index += 1
+            }
+            
+        }
+        
+        return count
+    }
+    
+}
+
+
 // MARK: Iterators
 extension FieldMap: Sequence {
     

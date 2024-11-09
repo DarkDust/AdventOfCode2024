@@ -78,31 +78,6 @@ extension FieldMap<Field> {
         return false
     }
     
-    mutating func clearNonPath(path: [Coord]) {
-        let pathSet = Set(path)
-        
-        for (coord, _) in self where !pathSet.contains(coord) {
-            self[coord] = []
-        }
-    }
-    
-    func countInside() -> Int {
-        var sum = 0
-        
-        for y in 0 ..< self.height {
-            var isInside = false
-            for x in 0 ..< self.width {
-                let field = self[x, y]
-                if field.contains(.south) {
-                    isInside = !isInside
-                } else if field.isEmpty, isInside {
-                    sum += 1
-                }
-            }
-        }
-        
-        return sum
-    }
 }
 
 enum DayError: Error {
@@ -128,14 +103,18 @@ runPart(.input) {
 runPart(.input) {
     (lines) in
     
-    var map: FieldMap<Field> = try FieldMap(lines)
+    let map: FieldMap<Field> = try FieldMap(lines)
     let start = try map.findStart()
     
     for candidate in map.neighbours(for: start, scheme: .cross, wrap: false) {
         var path: [Coord] = []
         if map.findPath(coord: candidate.coord, from: start, path: &path) {
-            map.clearNonPath(path: path)
-            let inside = map.countInside()
+            let pathLookup = Set(path)
+            let inside = map.horizontalRaycast(countBorder: false) {
+                (coord, field) in field.contains(.south) && pathLookup.contains(coord)
+            } shouldCount: {
+                (coord, field) in !pathLookup.contains(coord)
+            }
             print("Part 2: \(inside)")
             break
         }
