@@ -10,22 +10,27 @@ import RegexBuilder
 
 
 public
-func runPart(_ input: Input, block: ([Substring]) throws -> Void) {
+func runPart(_ input: Input, repetitions: Int = 1, block: ([Substring]) throws -> Void) {
     let string = input.string
     let start = Date()
     
     // Consider preparing the input as part of the "run" when it comes to measuring the duration.
     let lines = string.split(whereSeparator: \.isNewline)
-    do {
-        try block(lines)
-    } catch {
-        print("Error: \(error)")
-        exit(1)
+    for _ in 0 ..< repetitions {
+        do {
+            try block(lines)
+        } catch {
+            print("Error: \(error)")
+            exit(1)
+        }
     }
     
     let elapsed = -start.timeIntervalSinceNow
     
     print("Elapsed: " + format(elpasedTime: elapsed))
+    if repetitions > 1 {
+        print("Average: " + format(elpasedTime: elapsed / Double(repetitions)))
+    }
 }
 
 
