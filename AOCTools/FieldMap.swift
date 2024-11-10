@@ -24,7 +24,7 @@ public
 struct FieldMap<Field: FieldProtocol> {
     
     /// Fields as a contiguous array.
-    fileprivate
+    @usableFromInline internal
     var fields: [Field]
     
     /// Width of the map.
@@ -87,6 +87,7 @@ public
 extension FieldMap {
     
     /// Direct, unchecked field access.
+    @inlinable
     subscript(x: Int, y: Int) -> Field {
         get {
             fields[y * width + x]
@@ -98,6 +99,7 @@ extension FieldMap {
     
     
     /// Direct, unchecked field getter.
+    @inlinable
     subscript(coord: Coord) -> Field {
         get {
             fields[coord.y * width + coord.x]
@@ -109,24 +111,28 @@ extension FieldMap {
     
     
     /// Wrapping field getter.
+    @inlinable
     func get(x: Int, y: Int) -> Field {
         fields[y.modulo(height) * width + x.modulo(width)]
     }
     
     
     /// Wrapping field getter.
+    @inlinable
     func get(_ coord: Coord) -> Field {
         fields[coord.y.modulo(height) * width + coord.x.modulo(width)]
     }
     
     
     /// Wrapping field setter.
+    @inlinable
     mutating func set(x: Int, y: Int, field: Field) {
         fields[y.modulo(height) * width + x.modulo(width)] = field
     }
     
     
     /// Wrapping field setter.
+    @inlinable
     mutating func set(_ coord: Coord, field: Field) {
         fields[coord.y.modulo(height) * width + coord.x.modulo(width)] = field
     }
