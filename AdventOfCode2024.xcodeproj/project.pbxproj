@@ -442,6 +442,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				49CC387C2CD95ED000482D01 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				4999274A2CE0D46100505E3F /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 498ABD302CD58DD300C61A33 /* Products */;
@@ -910,6 +911,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4999274A2CE0D46100505E3F /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 		49CC387C2CD95ED000482D01 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-collections.git";
