@@ -175,7 +175,7 @@ func minimumCut<Vertex: VertexProtocol>(
     vertices: any Collection<Vertex>,
     edges: any Collection<Edge<Vertex>>,
     cuts: Int,
-    maximumIterations: Int = 100
+    maximumIterations: Int = 1000
 ) -> [Edge<Vertex>] {
     for i in 0 ..< maximumIterations {
         let edges = minimumCut(vertices: vertices, edges: edges)

@@ -63,7 +63,7 @@ runPart(.input) {
         }
     }
     
-    let cuts = minimumCut(vertices: vertices, edges: edges, cuts: 3, maximumIterations: 10000)
+    let cuts = minimumCut(vertices: Array(vertices), edges: Array(edges), cuts: 3)
     edges.subtract(cuts)
     let groupLengths = countGroups(in: edges)
     let score = groupLengths.reduce(1, *)
