@@ -42,12 +42,24 @@ struct Edge<Vertex: VertexProtocol>: Hashable {
 }
 
 
+public
+extension Edge {
+    
+    /// Whether the receiver and parameter share a vertex.
+    @inlinable
+    func isConnected(to other: Self) -> Bool {
+        return self.from == other.from || self.to == other.to
+            || self.from == other.to || self.to == other.from
+    }
+    
+}
+
 
 /// Edge for use with minimum cut Karger's algorithm.
 private
 struct MergableEdge<Vertex: VertexProtocol> {
     
-    var edge: Edge<Vertex>
+    let edge: Edge<Vertex>
     let original: Edge<Vertex>
     
     init(edge: Edge<Vertex>) {
@@ -143,7 +155,7 @@ func checkConsistency<Vertex: VertexProtocol>(
         }
     }
     
-    let unknownVertices = Set(vertices).subtracting(verticesSeen)
+    let unknownVertices = Set(vertices).symmetricDifference(verticesSeen)
     precondition(unknownVertices.isEmpty, "Unknown vertex!")
 }
 #endif
