@@ -7,32 +7,64 @@
 
 import Foundation
 
+/// Protocol for vertices as used by graph algorithms.
 public
 protocol VertexProtocol: Hashable { }
+
+
+/// Protocol for graphs algorithms.
+///
+/// Ideally, I would've like to used a simple tuple (Vertex, Vertex), but you cannot make them
+/// conform to the Hashable protocol and thus can't use them in sets.
+///
+/// There is an accepted Swift Evolution proposal but unfortunately it didn't get implemented as
+/// of Xcode 16.1.
+///
+/// - seealso: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0283-tuples-are-equatable-comparable-hashable.md
+public
+struct Edge<Vertex: VertexProtocol>: Hashable {
+    
+    /// from of the edge.
+    public
+    let from: Vertex
+    
+    /// to of the edge.
+    public
+    let to: Vertex
+    
+    /// Initializer.
+    public
+    init(from: Vertex, to: Vertex) {
+        self.from = from
+        self.to = to
+    }
+    
+}
+
 
 
 /// Edge for use with minimum cut Karger's algorithm.
 private
 struct MergableEdge<Vertex: VertexProtocol> {
     
-    var edge: (Vertex, Vertex)
-    let original: (Vertex, Vertex)
+    var edge: Edge<Vertex>
+    let original: Edge<Vertex>
     
-    init(edge: (Vertex, Vertex)) {
+    init(edge: Edge<Vertex>) {
         self.edge = edge
         self.original = edge
     }
     
-    init(edge: (Vertex, Vertex), original: (Vertex, Vertex)) {
+    init(edge: Edge<Vertex>, original: Edge<Vertex>) {
         self.edge = edge
         self.original = original
     }
     
     func replace(victim: Vertex, survivor: Vertex) -> MergableEdge<Vertex> {
-        if edge.0 == victim {
-            return .init(edge: (survivor, edge.1), original: original)
-        } else if edge.1 == victim {
-            return .init(edge: (edge.0, survivor), original: original)
+        if edge.from == victim {
+            return .init(edge: Edge(from: survivor, to: edge.to), original: original)
+        } else if edge.to == victim {
+            return .init(edge: Edge(from: edge.from, to: survivor), original: original)
         } else {
             preconditionFailure("Invalid replacement!")
         }
@@ -48,8 +80,8 @@ struct MergableEdge<Vertex: VertexProtocol> {
 public
 func minimumCut<Vertex: VertexProtocol>(
     vertices: any Sequence<Vertex>,
-    edges: any Sequence<(Vertex, Vertex)>
-) -> [(Vertex, Vertex)] {
+    edges: any Sequence<Edge<Vertex>>
+) -> [Edge<Vertex>] {
     // https://en.wikipedia.org/wiki/Karger%27s_algorithm
     var remainingEdges = edges.map(MergableEdge.init)
     var remainingVertices = Array(vertices)
@@ -76,10 +108,10 @@ func minimumCut<Vertex: VertexProtocol>(
 public
 func minimumCut<Vertex: VertexProtocol>(
     vertices: any Sequence<Vertex>,
-    edges: any Sequence<(Vertex, Vertex)>,
+    edges: any Sequence<Edge<Vertex>>,
     cuts: Int,
     maximumIterations: Int = 100
-) -> [(Vertex, Vertex)] {
+) -> [Edge<Vertex>] {
     for _ in 0 ..< maximumIterations {
         let edges = minimumCut(vertices: vertices, edges: edges)
         if edges.count <= cuts {
@@ -101,12 +133,12 @@ func checkConsistency<Vertex: VertexProtocol>(
     var verticesSeen: Set<Vertex> = []
     
     for edge in edges {
-        verticesSeen.insert(edge.edge.0)
-        verticesSeen.insert(edge.edge.1)
-        guard vertices.contains(edge.edge.0) else {
+        verticesSeen.insert(edge.edge.from)
+        verticesSeen.insert(edge.edge.to)
+        guard vertices.contains(edge.edge.from) else {
             preconditionFailure("Invalid edge!")
         }
-        guard vertices.contains(edge.edge.1) else {
+        guard vertices.contains(edge.edge.to) else {
             preconditionFailure("Invalid edge!")
         }
     }
@@ -124,8 +156,8 @@ func contract<Vertex: VertexProtocol>(
     edges: inout [MergableEdge<Vertex>]
 ) {
     let edge = edges.remove(at: edgeIndex)
-    let survivor = edge.edge.0
-    let victim = edge.edge.1
+    let survivor = edge.edge.from
+    let victim = edge.edge.to
     
     guard let victimIndex = vertices.firstIndex(of: victim) else {
         preconditionFailure("Invalid victim!")
@@ -138,9 +170,9 @@ func contract<Vertex: VertexProtocol>(
     var needReplacement: [Int] = []
     var selfReferencing: [Int] = []
     for (index, candidate) in edges.enumerated()
-        where candidate.edge.0 == victim || candidate.edge.1 == victim
+        where candidate.edge.from == victim || candidate.edge.to == victim
     {
-        if candidate.edge.0 == survivor || candidate.edge.1 == survivor {
+        if candidate.edge.from == survivor || candidate.edge.to == survivor {
             selfReferencing.append(index)
         } else {
             needReplacement.append(index)

@@ -3,3 +3,4 @@
 These are my solutions for [Advent Of Code](https://adventofcode.com) 2024, written in Swift. 
 
 In each day's directory, you need to place the corresponding `input.txt`, `sample1.txt`, and `sample2.txt`, otherwise the days won't compile (or rather, link).
+Even if only one sample is provided, both a `sample1.txt` _and_ `sample2.txt` are required.
