@@ -80,7 +80,7 @@ struct UnionFind<Vertex: VertexProtocol> {
     }
     
     /// Find root of a tree.
-    func findSet(vertex: Vertex) -> Vertex {
+    mutating func findSet(vertex: Vertex) -> Vertex {
         let subset = nodes[vertex]!
         if subset.parent == vertex {
             return vertex
@@ -115,6 +115,103 @@ struct UnionFind<Vertex: VertexProtocol> {
         }
     }
     
+    
+    /// Create an independent copy of the struct.
+    ///
+    /// Supporting copy-on-write using `isKnownUniquelyReferenced` would be more Swift-y, but also
+    /// more expensive.
+    func copy() -> Self {
+        var copy = Self()
+        copy.nodes = self.nodes.mapValues {
+            (node) in
+            return Node(parent: node.parent, rank: node.rank)
+        }
+        return copy
+    }
+}
+
+
+/// Graph for the Karger-Stein algorithm.
+private
+struct KargerGraph<Vertex: VertexProtocol> {
+    
+    /// Number of vertices left to reduce. Does not correspond to the number of vertices in the
+    /// edges list.
+    var vertexCount: Int
+    
+    /// Remaining edges.
+    var edges: [Edge<Vertex>]
+    
+    /// Disjoint-set helper structure.
+    var unionFind: UnionFind<Vertex>
+    
+    
+    /// Initializer for the original graph.
+    init(vertices: any Collection<Vertex>, edges: any Collection<Edge<Vertex>>) {
+        self.vertexCount = vertices.count
+        self.edges = Array(edges)
+        var unionFind: UnionFind<Vertex> = UnionFind()
+        for vertex in vertices {
+            unionFind.makeSet(vertex: vertex)
+        }
+        self.unionFind = unionFind
+    }
+    
+    
+    /// Copying initializer.
+    init(copy: Self) {
+        self.vertexCount = copy.vertexCount
+        self.edges = copy.edges
+        self.unionFind = copy.unionFind.copy()
+    }
+    
+    
+    /// Returns the edges for the minimum cut of the graph.
+    mutating func minimumCut() -> [Edge<Vertex>] {
+        var result: [Edge<Vertex>] = []
+        for edge in self.edges {
+            let root1 = self.unionFind.findSet(vertex: edge.from)
+            let root2 = self.unionFind.findSet(vertex: edge.to)
+            
+            guard root1 != root2 else { continue }
+            
+            result.append(edge)
+        }
+        
+        return result
+    }
+    
+    
+    /// Estimate how "good" a graph is. A lower score is better.
+    mutating func estimateScore() -> Int {
+        #if false
+            // Count the number of minimum cuts.
+            // The repeated `findSet` calls are costly, notably the dictionary lookup.
+            var count = 0
+            for edge in self.edges {
+                let root1 = self.unionFind.findSet(vertex: edge.from)
+                let root2 = self.unionFind.findSet(vertex: edge.to)
+                guard root1 != root2 else { continue }
+                
+                count += 1
+            }
+            return count
+        #else
+            // Try to quickly estimate how "good" a graph is.
+            var disconnected: Int = 0
+            var ranks: Int = 0
+            
+            for (key, value) in self.unionFind.nodes {
+                if value.parent == key {
+                    disconnected += 1
+                }
+                ranks += value.rank
+            }
+            
+            return disconnected + ranks
+        #endif
+    }
+    
 }
 
 
@@ -128,40 +225,64 @@ func minimumCut<Vertex: VertexProtocol>(
     edges: any Collection<Edge<Vertex>>
 ) -> [Edge<Vertex>] {
     // https://en.wikipedia.org/wiki/Karger%27s_algorithm
+    // This function is the `fastmincut` of the Karger-Stein algorithm.
     
-    #if DEBUG
+#if DEBUG
     checkConsistency(vertices: vertices, edges: edges)
-    #endif
+#endif
     
-    var remainingVerticesCount = vertices.count
-    var unionFind: UnionFind<Vertex> = UnionFind()
-    for vertex in vertices {
-        unionFind.makeSet(vertex: vertex)
+    var stack: [KargerGraph<Vertex>] = []
+    stack.append(KargerGraph(vertices: vertices, edges: edges))
+    var bestMinimumCut: [Edge<Vertex>] = Array(edges)
+    
+    while !stack.isEmpty {
+        let graph = stack.removeLast()
+        if graph.vertexCount <= 6 {
+            var finalGraph = contract(graph: graph, size: 2)
+            let cut = finalGraph.minimumCut()
+            if cut.count < bestMinimumCut.count {
+                bestMinimumCut = cut
+            }
+            continue
+        }
+        
+        let size = Int(1 + (Double(graph.vertexCount) / 2.squareRoot()).rounded(.up))
+        
+        var candidate1 = contract(graph: graph, size: size)
+        var candidate2 = contract(graph: graph, size: size)
+        let score1 = candidate1.estimateScore()
+        let score2 = candidate2.estimateScore()
+        if score1 < score2 {
+            stack.append(candidate1)
+        } else {
+            stack.append(candidate2)
+        }
     }
     
+    return bestMinimumCut
+}
+
+private
+func contract<Vertex: VertexProtocol>(
+    graph: KargerGraph<Vertex>,
+    size: Int
+) -> KargerGraph<Vertex> {
+    var graph = KargerGraph(copy: graph)
     var rng = SystemRandomNumberGenerator()
-    while remainingVerticesCount > 2 {
-        let edge = edges.randomElement(using: &rng)!
-        let root1 = unionFind.findSet(vertex: edge.from)
-        let root2 = unionFind.findSet(vertex: edge.to)
+    
+    while graph.vertexCount > size {
+        let index = rng.next(upperBound: UInt(graph.edges.count))
+        let edge = graph.edges.remove(at: Int(index))
+        let root1 = graph.unionFind.findSet(vertex: edge.from)
+        let root2 = graph.unionFind.findSet(vertex: edge.to)
         
         guard root1 != root2 else { continue }
         
-        unionFind.union(root1, root2)
-        remainingVerticesCount -= 1
+        graph.unionFind.union(root1, root2)
+        graph.vertexCount -= 1
     }
     
-    var result: [Edge<Vertex>] = []
-    for edge in edges {
-        let root1 = unionFind.findSet(vertex: edge.from)
-        let root2 = unionFind.findSet(vertex: edge.to)
-        
-        guard root1 != root2 else { continue }
-        
-        result.append(edge)
-    }
-    
-    return result
+    return graph
 }
 
 
@@ -177,10 +298,12 @@ func minimumCut<Vertex: VertexProtocol>(
     cuts: Int,
     maximumIterations: Int = 1000
 ) -> [Edge<Vertex>] {
+    let start = Date()
     for i in 0 ..< maximumIterations {
         let edges = minimumCut(vertices: vertices, edges: edges)
         if edges.count <= cuts {
-            print("Took \(i + 1) attempts")
+            let average = Date().timeIntervalSince(start) / Double(i + 1)
+            print("Took \(i + 1) attempts, average \(average) seconds per attempt.")
             return edges
         } else {
             print("\(edges.count) cuts")
