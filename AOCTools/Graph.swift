@@ -61,7 +61,7 @@ private
 struct UnionFind<Vertex: VertexProtocol> {
     
     /// A node in the forest.
-    class Node {
+    struct Node {
         var parent: Vertex
         var rank: Int
         
@@ -81,14 +81,15 @@ struct UnionFind<Vertex: VertexProtocol> {
     
     /// Find root of a tree.
     mutating func findSet(vertex: Vertex) -> Vertex {
-        let subset = nodes[vertex]!
+        let index = nodes.index(forKey: vertex)!
+        let subset = nodes.values[index]
         if subset.parent == vertex {
             return vertex
         }
         
         let parent = findSet(vertex: subset.parent)
         // Compress the path. Speeds up finding the root repeatedly.
-        subset.parent = parent
+        nodes.values[index].parent = parent
         return parent
     }
     
@@ -101,8 +102,10 @@ struct UnionFind<Vertex: VertexProtocol> {
             return
         }
         
-        var subset1 = nodes[root1]!
-        var subset2 = nodes[root2]!
+        let index1 = nodes.index(forKey: root1)!
+        let index2 = nodes.index(forKey: root2)!
+        var subset1 = nodes.values[index1]
+        var subset2 = nodes.values[index2]
         
         if subset1.rank < subset2.rank {
             (subset1, subset2) = (subset2, subset1)
@@ -113,21 +116,11 @@ struct UnionFind<Vertex: VertexProtocol> {
         if subset1.rank == subset2.rank {
             subset1.rank += 1
         }
+        
+        nodes.values[index1] = subset1
+        nodes.values[index2] = subset2
     }
     
-    
-    /// Create an independent copy of the struct.
-    ///
-    /// Supporting copy-on-write using `isKnownUniquelyReferenced` would be more Swift-y, but also
-    /// more expensive.
-    func copy() -> Self {
-        var copy = Self()
-        copy.nodes = self.nodes.mapValues {
-            (node) in
-            return Node(parent: node.parent, rank: node.rank)
-        }
-        return copy
-    }
 }
 
 
@@ -155,14 +148,6 @@ struct KargerGraph<Vertex: VertexProtocol> {
             unionFind.makeSet(vertex: vertex)
         }
         self.unionFind = unionFind
-    }
-    
-    
-    /// Copying initializer.
-    init(copy: Self) {
-        self.vertexCount = copy.vertexCount
-        self.edges = copy.edges
-        self.unionFind = copy.unionFind.copy()
     }
     
     
@@ -267,7 +252,7 @@ func contract<Vertex: VertexProtocol>(
     graph: KargerGraph<Vertex>,
     size: Int
 ) -> KargerGraph<Vertex> {
-    var graph = KargerGraph(copy: graph)
+    var graph = graph
     var rng = SystemRandomNumberGenerator()
     
     while graph.vertexCount > size {
