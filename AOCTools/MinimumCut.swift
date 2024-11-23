@@ -79,21 +79,21 @@ struct UnionFind<Vertex: VertexProtocol> {
 
 /// Graph for the Karger-Stein algorithm.
 private
-struct KargerGraph<Vertex: VertexProtocol> {
+struct KargerGraph<Vertex: VertexProtocol, Edge: EdgeProtocol> where Edge.Vertex == Vertex {
     
     /// Number of vertices left to reduce. Does not correspond to the number of vertices in the
     /// edges list.
     var vertexCount: Int
     
     /// Remaining edges.
-    var edges: [Edge<Vertex>]
+    var edges: [Edge]
     
     /// Disjoint-set helper structure.
     var unionFind: UnionFind<Vertex>
     
     
     /// Initializer for the original graph.
-    init(vertices: any Collection<Vertex>, edges: any Collection<Edge<Vertex>>) {
+    init(vertices: any Collection<Vertex>, edges: any Collection<Edge>) {
         self.vertexCount = vertices.count
         self.edges = Array(edges)
         var unionFind: UnionFind<Vertex> = UnionFind()
@@ -105,8 +105,8 @@ struct KargerGraph<Vertex: VertexProtocol> {
     
     
     /// Returns the edges for the minimum cut of the graph.
-    mutating func minimumCut() -> [Edge<Vertex>] {
-        var result: [Edge<Vertex>] = []
+    mutating func minimumCut() -> [Edge] {
+        var result: [Edge] = []
         for edge in self.edges {
             let root1 = self.unionFind.findSet(vertex: edge.from)
             let root2 = self.unionFind.findSet(vertex: edge.to)
@@ -158,10 +158,10 @@ struct KargerGraph<Vertex: VertexProtocol> {
 /// - note: This algorithm has a high _probability_ of returning the minimum number of cuts, but
 ///   it doesn't always do so.
 public
-func minimumCut<Vertex: VertexProtocol>(
+func minimumCut<Vertex: VertexProtocol, Edge: EdgeProtocol>(
     vertices: any Collection<Vertex>,
-    edges: any Collection<Edge<Vertex>>
-) -> [Edge<Vertex>] {
+    edges: any Collection<Edge>
+) -> [Edge] where Edge.Vertex == Vertex {
     // https://en.wikipedia.org/wiki/Karger%27s_algorithm
     // This function is the `fastmincut` of the Karger-Stein algorithm.
     
@@ -169,9 +169,9 @@ func minimumCut<Vertex: VertexProtocol>(
     checkConsistency(vertices: vertices, edges: edges)
 #endif
     
-    var stack: [KargerGraph<Vertex>] = []
+    var stack: [KargerGraph<Vertex, Edge>] = []
     stack.append(KargerGraph(vertices: vertices, edges: edges))
-    var bestMinimumCut: [Edge<Vertex>] = Array(edges)
+    var bestMinimumCut: [Edge] = Array(edges)
     
     while !stack.isEmpty {
         let graph = stack.removeLast()
@@ -201,10 +201,10 @@ func minimumCut<Vertex: VertexProtocol>(
 }
 
 private
-func contract<Vertex: VertexProtocol>(
-    graph: KargerGraph<Vertex>,
+func contract<Vertex: VertexProtocol, Edge: EdgeProtocol>(
+    graph: KargerGraph<Vertex, Edge>,
     size: Int
-) -> KargerGraph<Vertex> {
+) -> KargerGraph<Vertex, Edge> where Edge.Vertex == Vertex {
     var graph = graph
     var rng = SystemRandomNumberGenerator()
     
@@ -230,12 +230,12 @@ func contract<Vertex: VertexProtocol>(
 /// Useful if it's known a solution with the given number of cuts exists, and only the edges to
 /// cut need to be searched.
 public
-func minimumCut<Vertex: VertexProtocol>(
+func minimumCut<Vertex: VertexProtocol, Edge: EdgeProtocol>(
     vertices: any Collection<Vertex>,
-    edges: any Collection<Edge<Vertex>>,
+    edges: any Collection<Edge>,
     cuts: Int,
     maximumIterations: Int = 1000
-) -> [Edge<Vertex>] {
+) -> [Edge] where Edge.Vertex == Vertex {
     let start = Date()
     for i in 0 ..< maximumIterations {
         let edges = minimumCut(vertices: vertices, edges: edges)
@@ -256,10 +256,10 @@ func minimumCut<Vertex: VertexProtocol>(
 
 #if DEBUG
 private
-func checkConsistency<Vertex: VertexProtocol>(
+func checkConsistency<Vertex: VertexProtocol, Edge: EdgeProtocol>(
     vertices: any Sequence<Vertex>,
-    edges: any Sequence<Edge<Vertex>>
-) {
+    edges: any Sequence<Edge>
+) where Edge.Vertex == Vertex {
     var verticesSeen: Set<Vertex> = []
     
     for edge in edges {

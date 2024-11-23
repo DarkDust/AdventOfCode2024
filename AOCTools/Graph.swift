@@ -12,7 +12,29 @@ public
 protocol VertexProtocol: Hashable { }
 
 
-/// Protocol for graphs algorithms.
+/// Protocol for edges as used by graph algorithms.
+public
+protocol EdgeProtocol: Hashable {
+    associatedtype Vertex: VertexProtocol
+    
+    /// Start of the edge.
+    var from: Vertex { get }
+    
+    /// End of the edge.
+    var to: Vertex { get }
+}
+
+
+/// Protocol of weighted edges as used by graph algorithms.
+public
+protocol WeightedEdgeProtocol: EdgeProtocol {
+    
+    /// Weight of the edge.
+    var weight: Int { get }
+}
+
+
+/// Edge for graph algorithms.
 ///
 /// Ideally, I would've like to used a simple tuple (Vertex, Vertex), but you cannot make them
 /// conform to the Hashable protocol and thus can't use them in sets.
@@ -22,13 +44,13 @@ protocol VertexProtocol: Hashable { }
 ///
 /// - seealso: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0283-tuples-are-equatable-comparable-hashable.md
 public
-struct Edge<Vertex: VertexProtocol>: Hashable {
+struct Edge<Vertex: VertexProtocol>: EdgeProtocol {
     
-    /// from of the edge.
+    /// Start of the edge.
     public
     let from: Vertex
     
-    /// to of the edge.
+    /// End of the edge.
     public
     let to: Vertex
     
@@ -42,8 +64,35 @@ struct Edge<Vertex: VertexProtocol>: Hashable {
 }
 
 
+/// Weighted edge for graph algorithms.
 public
-extension Edge {
+struct WeightedEdge<Vertex: VertexProtocol>: WeightedEdgeProtocol {
+    
+    /// Start of the edge.
+    public
+    let from: Vertex
+    
+    /// End of the edge.
+    public
+    let to: Vertex
+    
+    /// Weight of the edge.
+    public
+    let weight: Int
+    
+    /// Initializer.
+    public
+    init(from: Vertex, to: Vertex, weight: Int) {
+        self.from = from
+        self.to = to
+        self.weight = weight
+    }
+    
+}
+
+
+public
+extension EdgeProtocol {
     
     /// Whether the receiver and parameter share a vertex.
     @inlinable
