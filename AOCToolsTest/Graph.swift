@@ -8,8 +8,6 @@
 import AOCTools
 import Testing
 
-extension String: @retroactive VertexProtocol { }
-
 
 struct GraphTests {
     

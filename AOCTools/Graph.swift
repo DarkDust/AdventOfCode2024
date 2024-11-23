@@ -102,3 +102,7 @@ extension EdgeProtocol {
     }
     
 }
+
+
+extension String: VertexProtocol { }
+extension Int: VertexProtocol { }
