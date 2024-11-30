@@ -20,6 +20,8 @@ enum FieldMapError: Error {
 
 
 /// A two-dimensional array of fields.
+///
+/// For a simpler, generic two-dimensional version see ``Fixed2DArray``.
 public
 struct FieldMap<Field: FieldProtocol> {
     
