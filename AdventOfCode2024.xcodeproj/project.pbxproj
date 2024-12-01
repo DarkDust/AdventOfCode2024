@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4923478C2CFC4E5300BFC91B /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		493287CC2CF1D78400A8F68D /* HeapModule in Frameworks */ = {isa = PBXBuildFile; productRef = 49BA0E2F2CD95FB60054100F /* HeapModule */; };
 		493287CD2CF1D78400A8F68D /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 49F38D862CDA955E00E14138 /* OrderedCollections */; };
 		493287CE2CF1D78400A8F68D /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 497AAD922CDAAB0B0083F914 /* DequeModule */; };
@@ -24,12 +25,30 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		492347832CFC4E4700BFC91B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		492347852CFC4E4700BFC91B /* Day1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day1; sourceTree = BUILT_PRODUCTS_DIR; };
 		498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libAOCTools.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AOCToolsTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		492347862CFC4E4700BFC91B /* Day1 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Day1;
+			sourceTree = "<group>";
+		};
 		498ABD3E2CD58E4600C61A33 /* AOCTools */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AOCTools;
@@ -43,6 +62,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		492347822CFC4E4700BFC91B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4923478C2CFC4E5300BFC91B /* libAOCTools.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		498ABD3B2CD58E4600C61A33 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -70,6 +97,7 @@
 			children = (
 				498ABD3E2CD58E4600C61A33 /* AOCTools */,
 				498ABD702CD62B5500C61A33 /* AOCToolsTest */,
+				492347862CFC4E4700BFC91B /* Day1 */,
 				498ABD512CD58E8D00C61A33 /* Frameworks */,
 				498ABD302CD58DD300C61A33 /* Products */,
 			);
@@ -80,6 +108,7 @@
 			children = (
 				498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */,
 				498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */,
+				492347852CFC4E4700BFC91B /* Day1 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,6 +133,28 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		492347842CFC4E4700BFC91B /* Day1 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4923478B2CFC4E4700BFC91B /* Build configuration list for PBXNativeTarget "Day1" */;
+			buildPhases = (
+				492347812CFC4E4700BFC91B /* Sources */,
+				492347822CFC4E4700BFC91B /* Frameworks */,
+				492347832CFC4E4700BFC91B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				492347862CFC4E4700BFC91B /* Day1 */,
+			);
+			name = Day1;
+			packageProductDependencies = (
+			);
+			productName = Day1;
+			productReference = 492347852CFC4E4700BFC91B /* Day1 */;
+			productType = "com.apple.product-type.tool";
+		};
 		498ABD3C2CD58E4600C61A33 /* AOCTools */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 498ABD432CD58E4600C61A33 /* Build configuration list for PBXNativeTarget "AOCTools" */;
@@ -163,6 +214,9 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					492347842CFC4E4700BFC91B = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					498ABD3C2CD58E4600C61A33 = {
 						CreatedOnToolsVersion = 16.1;
 						LastSwiftMigration = 1610;
@@ -192,6 +246,7 @@
 			targets = (
 				498ABD3C2CD58E4600C61A33 /* AOCTools */,
 				498ABD6E2CD62B5500C61A33 /* AOCToolsTest */,
+				492347842CFC4E4700BFC91B /* Day1 */,
 			);
 		};
 /* End PBXProject section */
@@ -207,6 +262,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		492347812CFC4E4700BFC91B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		498ABD3A2CD58E4600C61A33 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -232,6 +294,26 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		492347892CFC4E4700BFC91B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4923478A2CFC4E4700BFC91B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		498ABD342CD58DD300C61A33 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -447,6 +529,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4923478B2CFC4E4700BFC91B /* Build configuration list for PBXNativeTarget "Day1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				492347892CFC4E4700BFC91B /* Debug */,
+				4923478A2CFC4E4700BFC91B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		498ABD2A2CD58DD200C61A33 /* Build configuration list for PBXProject "AdventOfCode2024" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
