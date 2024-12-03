@@ -64,6 +64,7 @@
 		498ABD6F2CD62B5500C61A33 /* AOCToolsTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AOCToolsTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		49FB41302CFE34AE0056D0C5 /* Day2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day2; sourceTree = BUILT_PRODUCTS_DIR; };
 		49FB41472CFF6BCB0056D0C5 /* Day3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day3; sourceTree = BUILT_PRODUCTS_DIR; };
+		49FB414F2CFF817D0056D0C5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -145,6 +146,7 @@
 		498ABD262CD58DD200C61A33 = {
 			isa = PBXGroup;
 			children = (
+				49FB414F2CFF817D0056D0C5 /* README.md */,
 				498ABD3E2CD58E4600C61A33 /* AOCTools */,
 				498ABD702CD62B5500C61A33 /* AOCToolsTest */,
 				492347862CFC4E4700BFC91B /* Day1 */,
