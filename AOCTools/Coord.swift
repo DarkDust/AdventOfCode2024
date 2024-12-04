@@ -11,8 +11,8 @@ import Foundation
 /// Coordinate with integer elements.
 public
 struct Coord: Hashable {
-    public let x: Int
-    public let y: Int
+    public var x: Int
+    public var y: Int
     
     public
     init(x: Int, y: Int) {
@@ -207,6 +207,30 @@ extension RandomAccessCollection where Element == Coord {
         return area
     }
     
+}
+
+
+// MARK: Arithmetic
+public
+extension Coord {
+    
+    static func + (lhs: Coord, rhs: Coord) -> Coord {
+        Coord(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+    
+    static func += (lhs: inout Coord, rhs: Coord) {
+        lhs.x += rhs.x
+        lhs.y += rhs.y
+    }
+    
+    static func - (lhs: Coord, rhs: Coord) -> Coord {
+        Coord(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+    
+    static func -= (lhs: inout Coord, rhs: Coord) {
+        lhs.x -= rhs.x
+        lhs.y -= rhs.y
+    }
 }
 
 

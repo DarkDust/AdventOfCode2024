@@ -28,7 +28,7 @@ struct Fixed2DArray<T> {
     
     
     /// Designated initializer.
-    @usableFromInline internal
+    @inlinable public
     init(rows: Int, columns: Int, repeating: T) {
         self.rows = rows
         self.columns = columns
@@ -86,6 +86,24 @@ extension Fixed2DArray {
     
 }
 
+// MARK: Helper
+public
+extension Fixed2DArray {
+    
+    /// Whether the coordinate is within the array's bounds.
+    @inlinable
+    func isInBounds(x: Int, y: Int) -> Bool {
+        return x >= 0 && x < columns && y >= 0 && y < rows
+    }
+    
+    /// Whether the coordinate is within the array's bounds.
+    @inlinable
+    func isInBounds(_ coord: Coord) -> Bool {
+        return coord.x >= 0 && coord.x < columns && coord.y >= 0 && coord.y < rows
+    }
+    
+}
+
 
 // MARK: Collection protocol
 extension Fixed2DArray: Collection {
@@ -111,5 +129,39 @@ extension Fixed2DArray: Collection {
     
     @inlinable public
     func makeIterator() -> IndexingIterator<[T]> { data.makeIterator() }
+    
+}
+
+
+// MARK: Common convenience initializer
+public
+extension Fixed2DArray where T == Character {
+    
+    /// Initialize from a list of lines of equal length.
+    @inlinable
+    init(lines: [any StringProtocol]) {
+        guard !lines.isEmpty else {
+            self.data = []
+            self.rows = 0
+            self.columns = 0
+            return
+        }
+        
+        self.rows = lines.count
+        self.columns = lines[0].count
+        
+#if DEBUG
+        for line in lines {
+            assert(line.count == self.columns)
+        }
+#endif
+        
+        var data: [Character] = []
+        for line in lines {
+            data.append(contentsOf: line)
+        }
+        
+        self.data = data
+    }
     
 }
