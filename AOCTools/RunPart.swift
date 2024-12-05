@@ -18,7 +18,12 @@ func runPart(_ input: Input, repetitions: Int = 1, block: ([Substring]) throws -
     let start = Date()
     
     // Consider preparing the input as part of the "run" when it comes to measuring the duration.
-    let lines = string.split(whereSeparator: \.isNewline)
+    // Need to handle empty lines in the middle, but remove a trailing empty line.
+    var lines = string.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+    if lines.last?.isEmpty ?? false {
+        lines.removeLast()
+    }
+    
     for _ in 0 ..< repetitions {
         do {
             try block(lines)
