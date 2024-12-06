@@ -9,6 +9,7 @@ import Foundation
 import RegexBuilder
 
 
+// "Normal" implementation
 public
 func runPart(_ input: Input, repetitions: Int = 1, block: ([Substring]) throws -> Void) {
     var string = input.string
@@ -41,6 +42,39 @@ func runPart(_ input: Input, repetitions: Int = 1, block: ([Substring]) throws -
     }
 }
 
+
+// async implementation
+public
+func runPart(_ input: Input, repetitions: Int = 1, block: ([Substring]) async throws -> Void) async {
+    var string = input.string
+    string.makeContiguousUTF8()
+    assert(string.isContiguousUTF8, "Cannot make the string contiguous, performance would be bad")
+    
+    let start = Date()
+    
+    // Consider preparing the input as part of the "run" when it comes to measuring the duration.
+    // Need to handle empty lines in the middle, but remove a trailing empty line.
+    var lines = string.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+    if lines.last?.isEmpty ?? false {
+        lines.removeLast()
+    }
+    
+    for _ in 0 ..< repetitions {
+        do {
+            try await block(lines)
+        } catch {
+            print("Error: \(error)")
+            exit(1)
+        }
+    }
+    
+    let elapsed = -start.timeIntervalSinceNow
+    
+    print("Elapsed: " + format(elpasedTime: elapsed))
+    if repetitions > 1 {
+        print("Average: " + format(elpasedTime: elapsed / Double(repetitions)))
+    }
+}
 
 private
 func format(elpasedTime elapsed: TimeInterval) -> String {

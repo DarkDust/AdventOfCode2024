@@ -10,7 +10,7 @@ import Foundation
 
 /// Coordinate with integer elements.
 public
-struct Coord: Hashable {
+struct Coord: Hashable, Sendable {
     public var x: Int
     public var y: Int
     

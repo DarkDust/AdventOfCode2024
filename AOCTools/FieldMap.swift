@@ -330,3 +330,5 @@ public extension FieldMap where Field: CustomStringConvertible {
 extension FieldMap: Equatable where Field: Equatable { }
 
 extension FieldMap: Hashable where Field: Hashable { }
+
+extension FieldMap: Sendable where Field: Sendable { }

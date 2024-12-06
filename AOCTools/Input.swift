@@ -7,7 +7,7 @@
 
 /// Defines which input to process.
 public
-enum Input {
+enum Input: Sendable {
     /// Main puzzle input. Given via `input.txt` in the day's source directory.
     case input
     

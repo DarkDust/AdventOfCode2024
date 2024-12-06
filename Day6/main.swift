@@ -81,7 +81,7 @@ runPart(.input) {
     
 }
 
-runPart(.input) {
+await runPart(.input) {
     (lines) in
     
     let original = try FieldMap<Field>(lines)
@@ -105,16 +105,27 @@ runPart(.input) {
         throw DayError.unexpectedLoop
     }
     
-    var loops = 0
-    for candidate in candidates {
-        var map = original
-        map[candidate] = .obstacle
+    let loops = await withTaskGroup(of: Int.self) {
+        (group) in
         
-        switch walk(map: map, from: watchPos) {
-        case .exit: break
-        case .loop: loops += 1
+        for candidate in candidates {
+            group.addTask {
+                var map = original
+                map[candidate] = .obstacle
+                
+                switch walk(map: map, from: watchPos) {
+                case .exit: return 0
+                case .loop: return 1
+                }
+            }
         }
+        
+        var total = 0
+        for await result in group {
+            total += result
+        }
+        return total
     }
-    
+        
     print("Part 2: \(loops)")
 }
