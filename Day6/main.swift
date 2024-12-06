@@ -42,7 +42,7 @@ func walk(map: FieldMap<Field>, from: Coord) -> Outcome {
     var visited: [Coord: Int] = [cursor: 1]
     
     while true {
-        let ahead = cursor + direction.stepOffset
+        let ahead = cursor + direction
         guard map.isInBounds(ahead) else {
             return .exit(visited: visited.count)
         }

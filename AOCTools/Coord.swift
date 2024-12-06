@@ -231,6 +231,14 @@ extension Coord {
         lhs.x -= rhs.x
         lhs.y -= rhs.y
     }
+    
+    static func + (lhs: Coord, rhs: Direction) -> Coord {
+        lhs + rhs.stepOffset
+    }
+    
+    static func += (lhs: inout Coord, rhs: Direction) {
+        lhs += rhs.stepOffset
+    }
 }
 
 
