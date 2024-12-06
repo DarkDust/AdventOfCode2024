@@ -139,7 +139,6 @@ extension FieldMap {
         fields[coord.y.modulo(height) * width + coord.x.modulo(width)] = field
     }
     
-    
 }
 
 
@@ -197,6 +196,36 @@ extension FieldMap {
         } else {
             return nil
         }
+    }
+    
+}
+
+
+
+// MARK: Helpers
+public
+extension FieldMap where Field: Equatable {
+    
+    /// Whether the coordinate is within the array's bounds.
+    @inlinable
+    func isInBounds(x: Int, y: Int) -> Bool {
+        return x >= 0 && x < self.width && y >= 0 && y < self.height
+    }
+    
+    
+    /// Whether the coordinate is within the array's bounds.
+    @inlinable
+    func isInBounds(_ coord: Coord) -> Bool {
+        return coord.x >= 0 && coord.x < self.width && coord.y >= 0 && coord.y < self.height
+    }
+    
+    
+    /// Find first field of the given value.
+    func findFirst(_ field: Field) -> Coord? {
+        let index = self.fields.firstIndex(of: field)
+        guard let index else { return nil }
+        
+        return Coord(x: index % self.width, y: index / self.width)
     }
     
 }
