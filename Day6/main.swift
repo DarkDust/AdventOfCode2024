@@ -31,7 +31,7 @@ enum Field: FieldProtocol, Equatable {
 
 
 enum Outcome {
-    case exit(visited: Int)
+    case exit(visited: Set<Coord>)
     case loop
 }
 
@@ -44,7 +44,7 @@ func walk(map: FieldMap<Field>, from: Coord) -> Outcome {
     while true {
         let ahead = cursor + direction
         guard map.isInBounds(ahead) else {
-            return .exit(visited: visited.count)
+            return .exit(visited: Set(visited.keys))
         }
         
         if map[ahead] == .obstacle {
@@ -73,7 +73,7 @@ runPart(.input) {
     
     switch walk(map: map, from: watchPos) {
     case .exit(let visited):
-        print("Part 1: \(visited)")
+        print("Part 1: \(visited.count)")
         
     case .loop:
         throw DayError.unexpectedLoop
@@ -89,18 +89,30 @@ runPart(.input) {
         throw DayError.missingWatch
     }
     
+    // My first version was just a brute force attempt: iterate all field coordinates, replacing
+    // empty fields with an obstacle and checking it.
+    //
+    // This optimization is not mine, unfortunately: saw it in a solution from someone else (sorry,
+    // don't remember who). First, walk the field without additional obstacles. That gives us all
+    // fields that are actually worth putting an obstacle into.
+    
+    let candidates: Set<Coord>
+    switch walk(map: original, from: watchPos) {
+    case .exit(let visited):
+        candidates = visited.subtracting([watchPos])
+        
+    case .loop:
+        throw DayError.unexpectedLoop
+    }
+    
     var loops = 0
-    for x in 0 ..< original.width {
-        for y in 0 ..< original.height {
-            guard original[x, y] == .empty else { continue }
-            
-            var map = original
-            map[x, y] = .obstacle
-            
-            switch walk(map: map, from: watchPos) {
-            case .exit: break
-            case .loop: loops += 1
-            }
+    for candidate in candidates {
+        var map = original
+        map[candidate] = .obstacle
+        
+        switch walk(map: map, from: watchPos) {
+        case .exit: break
+        case .loop: loops += 1
         }
     }
     
