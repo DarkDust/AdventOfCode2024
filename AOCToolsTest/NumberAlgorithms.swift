@@ -48,4 +48,12 @@ struct NumberAlgorithmsTests {
         #expect(NumberAlgorithms.interpolate(sequence: data2, step: 3) == 35)
     }
     
+    @Test
+    func digits() {
+        #expect(12.numberOfDigits == 2)
+        #expect(123_456.numberOfDigits == 6)
+        #expect(12.concatenate(34) == 1234)
+        #expect(123_456.concatenate(789) == 123456789)
+    }
+    
 }

@@ -5,6 +5,9 @@
 //  Created by Marc Haisenko on 2024-11-02.
 //
 
+import _math
+
+
 public
 extension FixedWidthInteger {
     
@@ -37,6 +40,33 @@ extension FixedWidthInteger {
             return r + other
         }
         return r - other
+    }
+    
+    /// The number of digits in base 10.
+    @inlinable
+    var numberOfDigits: Int {
+        // Unsigned variant
+        Int(log10(Double(self))) + 1
+    }
+    
+    /// Combines the receiver and argument as if they were strings.
+    ///
+    /// For example, `12.concatenate(34) == 1234`.
+    @inlinable
+    func concatenate(_ other: Self) -> Self {
+        let digits = other.numberOfDigits
+        return (self * Self(pow(10, Double(digits)))) + other
+    }
+}
+
+
+public
+extension FixedWidthInteger where Self: SignedNumeric {
+    
+    /// The number of digits in base 10. Not including the sign.
+    @inlinable
+    var numberOfDigits: Int {
+        Int(log10(Double(abs(self)))) + 1
     }
     
 }
