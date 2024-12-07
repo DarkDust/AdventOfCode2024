@@ -25,6 +25,7 @@ func concatenate(_ a: Int, _ b: Int) -> Int { a.concatenate(b) }
 struct Calibration {
     let target: Int
     let values: [Int]
+    let valuesCount: Int
     
     
     init(_ line: Substring) throws {
@@ -47,6 +48,7 @@ struct Calibration {
         
         self.target = match[refTarget]
         self.values = match[refValues]
+        self.valuesCount = self.values.count
     }
     
     
@@ -54,38 +56,24 @@ struct Calibration {
     func isValid(ops: [Operator]) -> Bool {
         // Handle some edge cases first. They don't happen in the puzzles but ignoring them feels
         // wrong.
-        switch self.values.count {
+        switch self.valuesCount {
         case 0: return false
         case 1: return self.values[0] == self.target
         default: break
         }
         
-        let current = values[0]
-        let remaining = self.values.dropFirst()
-        for op in ops {
-            if self.isValid(current: current, remaining: remaining, op: op, ops: ops) {
-                return true
-            }
-        }
-        return false
+        return isValid(current: self.values[0], index: 1, ops: ops)
     }
     
     
     private
-    func isValid(current: Int, remaining: ArraySlice<Int>, op: Operator, ops: [Operator]) -> Bool {
-        let next = remaining[remaining.startIndex]
-        let intermediate = op(current, next)
-        if intermediate > self.target {
-            return false
-        }
+    func isValid(current: Int, index: Int, ops: [Operator]) -> Bool {
+        if current > self.target { return false }
+        if index == self.valuesCount { return current == self.target }
         
-        let nextRemaining = remaining.dropFirst()
-        if nextRemaining.isEmpty {
-            return intermediate == self.target
-        }
-        
+        let next = self.values[index]
         for op in ops {
-            if self.isValid(current: intermediate, remaining: nextRemaining, op: op, ops: ops) {
+            if isValid(current: op(current, next), index: index + 1, ops: ops) {
                 return true
             }
         }
