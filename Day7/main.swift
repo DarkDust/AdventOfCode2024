@@ -16,6 +16,11 @@ enum DayError: Error {
 /// Operator to apply to two integers.
 typealias Operator = (Int, Int) -> Int
 
+// Passing closures is much more expensive than passing functions!
+func plus(_ a: Int, _ b: Int) -> Int        { a + b }
+func multiply(_ a: Int, _ b: Int) -> Int    { a * b }
+func concatenate(_ a: Int, _ b: Int) -> Int { a.concatenate(b) }
+
 
 struct Calibration {
     let target: Int
@@ -99,11 +104,11 @@ func process(_ lines: [Substring], ops: [Operator]) throws -> Int {
 
 
 runPart(.input) {
-    let result = try process($0, ops: [ {$0 + $1}, {$0 * $1} ])
+    let result = try process($0, ops: [ plus, multiply ])
     print("Part 1: \(result)")
 }
 
 runPart(.input) {
-    let result = try process($0, ops: [ {$0 + $1}, {$0 * $1}, {$0.concatenate($1)} ])
+    let result = try process($0, ops: [ plus, multiply, concatenate ])
     print("Part 2: \(result)")
 }
