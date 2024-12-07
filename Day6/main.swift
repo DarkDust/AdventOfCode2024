@@ -105,27 +105,19 @@ await runPart(.input) {
         throw DayError.unexpectedLoop
     }
     
-    let loops = await withTaskGroup(of: Int.self) {
-        (group) in
+    
+    let loops = await candidates.mapAndReduce(0) {
+        (candidate) in
         
-        for candidate in candidates {
-            group.addTask {
-                var map = original
-                map[candidate] = .obstacle
-                
-                switch walk(map: map, from: watchPos) {
-                case .exit: return 0
-                case .loop: return 1
-                }
-            }
-        }
+        var map = original
+        map[candidate] = .obstacle
         
-        var total = 0
-        for await result in group {
-            total += result
+        switch walk(map: map, from: watchPos) {
+        case .exit: return 0
+        case .loop: return 1
         }
-        return total
-    }
+    } reduce: { $0 + $1 }
+    // In Xcode 16.1, the `+` operator is not @Sendable, so `reduce: +` doesn't work… 🙄
         
     print("Part 2: \(loops)")
 }
