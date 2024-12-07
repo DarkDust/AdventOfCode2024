@@ -54,14 +54,8 @@ struct Calibration {
     
     /// Check whether the input is valid when combining with the given list of operators.
     func isValid(ops: [Operator]) -> Bool {
-        // Handle some edge cases first. They don't happen in the puzzles but ignoring them feels
-        // wrong.
-        switch self.valuesCount {
-        case 0: return false
-        case 1: return self.values[0] == self.target
-        default: break
-        }
-        
+        // Handle an edge case first. It doesn't happen in the puzzles but ignoring it feels wrong.
+        guard self.valuesCount > 0 else { return false }
         return isValid(current: self.values[0], index: 1, ops: ops)
     }
     
