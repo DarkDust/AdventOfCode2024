@@ -30,9 +30,7 @@ struct Calibration {
             Capture(OneOrMore(.digit), as: refTarget, transform: { Int($0)! })
             ": "
             Capture(as: refValues) {
-                OneOrMore {
-                    .digit.union(.whitespace)
-                }
+                OneOrMore(.digit.union(.whitespace))
             } transform: {
                 $0.split(separator: .whitespace).map { Int($0)! }
             }
@@ -49,7 +47,8 @@ struct Calibration {
     
     /// Check whether the input is valid when combining with the given list of operators.
     func isValid(ops: [Operator]) -> Bool {
-        // Handle some edge cases first.
+        // Handle some edge cases first. They don't happen in the puzzles but ignoring them feels
+        // wrong.
         switch self.values.count {
         case 0: return false
         case 1: return self.values[0] == self.target
@@ -95,8 +94,7 @@ func process(_ lines: [Substring], ops: [Operator]) throws -> Int {
     let calibrations = try lines.map(Calibration.init)
     return calibrations
         .filter { $0.isValid(ops: ops) }
-        .map { $0.target }
-        .reduce(0, +)
+        .reduce(0) { $0 + $1.target }
 }
 
 
