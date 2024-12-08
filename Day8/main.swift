@@ -30,7 +30,7 @@ runPart(.input) {
 
     var antinodes: Set<Coord> = []
     for (_, antennaCoords) in antennas {
-        for coords in antennaCoords.permutations(ofCount: 2) {
+        for coords in antennaCoords.combinations(ofCount: 2) {
             let alpha = coords[0]
             let beta = coords[1]
             let diff = beta - alpha
@@ -55,7 +55,7 @@ runPart(.input) {
     }
     
     for (_, antennaCoords) in antennas {
-        for coords in antennaCoords.permutations(ofCount: 2) {
+        for coords in antennaCoords.combinations(ofCount: 2) {
             let alpha = coords[0]
             let beta = coords[1]
             let diff = beta - alpha
