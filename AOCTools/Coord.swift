@@ -239,6 +239,16 @@ extension Coord {
     static func += (lhs: inout Coord, rhs: Direction) {
         lhs += rhs.stepOffset
     }
+    
+    static func * (lhs: Coord, scale: Int) -> Coord {
+        Coord(x: lhs.x * scale, y: lhs.y * scale)
+    }
+    
+    static func *= (lhs: inout Coord, scale: Int) {
+        lhs.x *= scale
+        lhs.y *= scale
+    }
+    
 }
 
 
