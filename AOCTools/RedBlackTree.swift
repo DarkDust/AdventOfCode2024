@@ -82,6 +82,13 @@ class RedBlackTree<Key: Comparable, Value> {
 public
 extension RedBlackTree {
     
+    
+    /// Whether the tree is empty.
+    var isEmpty: Bool {
+        return root == nil
+    }
+    
+    
     /// Insert a value for a key.
     /// Multiple values for the same key may exist. Their order is undefined.
     func insert(_ key: Key, value: Value) {
@@ -126,6 +133,23 @@ extension RedBlackTree {
         guard let root else { return nil }
         
         let node = root.minimum
+        self.delete(node: node)
+        return (node.key, node.value)
+    }
+    
+    
+    /// Return the entry with biggest key.
+    var maximum: Element? {
+        guard let node = root?.maximum else { return nil }
+        return (node.key, node.value)
+    }
+    
+    
+    /// Remove and return the entry with the biggest key.
+    func removeMaximum() -> Element? {
+        guard let root else { return nil }
+        
+        let node = root.maximum
         self.delete(node: node)
         return (node.key, node.value)
     }
@@ -482,6 +506,12 @@ extension RedBlackTree: Sequence {
         Iterator(self.root)
     }
     
+    /// An iteratable sequence over all values.
+    public
+    var values: any Sequence<Value> {
+        ValueIterator(self.root)
+    }
+    
 }
 
 
@@ -513,6 +543,34 @@ extension RedBlackTree {
                 cursor = current.leftChild
             }
             return (key: top.key, value: top.value)
+        }
+    }
+    
+    struct ValueIterator: IteratorProtocol, Sequence {
+        public typealias Element = Value
+        
+        private
+        var stack: [RedBlackNode<Key, Value>] = []
+        
+        fileprivate
+        init(_ root: RedBlackNode<Key, Value>?) {
+            var cursor = root
+            while let current = cursor {
+                self.stack.append(current)
+                cursor = current.leftChild
+            }
+        }
+        
+        public
+        mutating func next() -> Element? {
+            guard !self.stack.isEmpty else { return nil }
+            let top = self.stack.removeLast()
+            var cursor = top.rightChild
+            while let current = cursor {
+                self.stack.append(current)
+                cursor = current.leftChild
+            }
+            return top.value
         }
     }
     

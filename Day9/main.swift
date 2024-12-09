@@ -36,7 +36,7 @@ func parse(_ line: Substring) -> ([FileChunk], [FileChunk]) {
 }
 
 
-func checksum(_ chunks: [FileChunk]) -> Int {
+func checksum(_ chunks: any Sequence<FileChunk>) -> Int {
     return chunks.reduce(0) {
         // Calculate sum of consecutive numbers (the indices covered by the chunk).
         let multiplier = (($1.start + ($1.start + $1.length - 1)) * $1.length) / 2
@@ -49,24 +49,27 @@ func checksum(_ chunks: [FileChunk]) -> Int {
 runPart(.input) {
     (lines) in
     
-    var (chunks, freeSpace) = parse(lines[0])
+    var (chunksList, freeSpace) = parse(lines[0])
+    
+    let chunks = RedBlackTree<Int, FileChunk>()
+    for chunk in chunksList {
+        chunks.insert(chunk.start, value: chunk)
+    }
     
     freeSpace = freeSpace.reversed()
-    while !freeSpace.isEmpty, !chunks.isEmpty {
+    while !freeSpace.isEmpty, let (_, lastChunk) = chunks.removeMaximum() {
         let nextFree = freeSpace.removeLast()
-        let lastChunk = chunks.removeLast()
         
         if nextFree.start > lastChunk.start {
-            chunks.append(lastChunk)
+            // No more suitable free space, need to re-add the just removed chunk and stop.
+            chunks.insert(lastChunk.start, value: lastChunk)
             break
         }
         
         if nextFree.length >= lastChunk.length {
             // File fits into the free space completely.
             let moved = FileChunk(id: lastChunk.id, start: nextFree.start, length: lastChunk.length)
-            let insertIndex = chunks.binarySearch(predicate: { $0.start < moved.start })
-//            let insertIndex = chunks.firstIndex(where: { $0.start > moved.start }) ?? chunks.endIndex
-            chunks.insert(moved, at: insertIndex)
+            chunks.insert(moved.start, value: moved)
             
             if nextFree.length > lastChunk.length {
                 freeSpace.append(FileChunk(id: -1, start: nextFree.start + lastChunk.length, length: nextFree.length - lastChunk.length))
@@ -77,13 +80,12 @@ runPart(.input) {
             let movedPart = FileChunk(id: lastChunk.id, start: nextFree.start, length: nextFree.length)
             let remainingPart = FileChunk(id: lastChunk.id, start: lastChunk.start, length: lastChunk.length - nextFree.length)
             
-            let insertIndex = chunks.firstIndex(where: { $0.start > movedPart.start }) ?? chunks.endIndex
-            chunks.insert(movedPart, at: insertIndex)
-            chunks.append(remainingPart)
+            chunks.insert(movedPart.start, value: movedPart)
+            chunks.insert(remainingPart.start, value: remainingPart)
         }
     }
     
-    print("Part 1: \(checksum(chunks))")
+    print("Part 1: \(checksum(chunks.values))")
 }
 
 runPart(.input) {
