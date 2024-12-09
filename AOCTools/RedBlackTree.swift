@@ -496,8 +496,33 @@ extension RedBlackTree {
 }
 
 
-// MARK: -
 
+// MARK: Convenience initialization
+extension RedBlackTree: ExpressibleByArrayLiteral {
+    
+    /// Creates an instance initialized with the given elements.
+    public convenience
+    init(arrayLiteral elements: Element...) {
+        self.init()
+        for element in elements {
+            self.insert(element.key, value: element.value)
+        }
+    }
+    
+    
+    /// Creates an instance initialize with the given list of values, keyed by a value's property.
+    @inlinable public convenience
+    init(_ values: any Sequence<Value>, keyedBy: KeyPath<Value, Key>) {
+        self.init()
+        for value in values {
+            self.insert(value[keyPath: keyedBy], value: value)
+        }
+    }
+    
+}
+
+
+// MARK: -
 // MARK: Iteration
 extension RedBlackTree: Sequence {
     
@@ -571,21 +596,6 @@ extension RedBlackTree {
                 cursor = current.leftChild
             }
             return top.value
-        }
-    }
-    
-}
-
-
-// MARK: ExpressibleByArrayLiteral
-
-extension RedBlackTree: ExpressibleByArrayLiteral {
-    
-    public convenience
-    init(arrayLiteral elements: Element...) {
-        self.init()
-        for element in elements {
-            self.insert(element.key, value: element.value)
         }
     }
     

@@ -51,10 +51,7 @@ runPart(.input) {
     
     var (chunksList, freeSpace) = parse(lines[0])
     
-    let chunks = RedBlackTree<Int, FileChunk>()
-    for chunk in chunksList {
-        chunks.insert(chunk.start, value: chunk)
-    }
+    let chunks = RedBlackTree(chunksList, keyedBy: \.start)
     
     freeSpace = freeSpace.reversed()
     while !freeSpace.isEmpty, let (_, lastChunk) = chunks.removeMaximum() {
