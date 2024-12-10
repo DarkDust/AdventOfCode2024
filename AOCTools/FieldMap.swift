@@ -332,3 +332,26 @@ extension FieldMap: Equatable where Field: Equatable { }
 extension FieldMap: Hashable where Field: Hashable { }
 
 extension FieldMap: Sendable where Field: Sendable { }
+
+
+// MARK: Standard field maps
+
+extension Int: FieldProtocol {
+    
+    public
+    static func parse(_ input: Character) -> Int? {
+        Int(String(input))
+    }
+    
+}
+
+
+extension Character: FieldProtocol {
+    
+    public
+    static func parse(_ input: Character) -> Character? {
+        return input
+    }
+    
+}
+
