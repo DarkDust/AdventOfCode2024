@@ -50,6 +50,7 @@ struct NumberAlgorithmsTests {
     
     @Test
     func digits() {
+        #expect(0.numberOfDigits == 1)
         #expect(12.numberOfDigits == 2)
         #expect(123_456.numberOfDigits == 6)
         #expect(12.concatenate(34) == 1234)

@@ -66,7 +66,8 @@ extension FixedWidthInteger where Self: SignedNumeric {
     /// The number of digits in base 10. Not including the sign.
     @inlinable
     var numberOfDigits: Int {
-        Int(log10(Double(abs(self)))) + 1
+        if self == 0 { return 1 }
+        return Int(log10(Double(abs(self)))) + 1
     }
     
 }
