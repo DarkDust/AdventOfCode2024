@@ -120,4 +120,34 @@ extension NumberAlgorithms {
         return Int(result)
     }
     
+    
+    /// Use Cramer's Rule to solve two linear equations.
+    ///
+    /// The equations both must have the form:
+    /// ```
+    /// x*a + y*b = c
+    /// ```
+    ///
+    /// Only exact integer solutions are supported.
+    static func cramersRule<T: FixedWidthInteger>(
+        a1: T, b1: T, c1: T,
+        a2: T, b2: T, c2: T
+    ) -> (T, T)? {
+        let determinant = a1 * b2 - b1 * a2
+        
+        guard determinant != 0 else { return nil }
+        
+        let determinant1 = c1 * b2 - b1 * c2
+        let determinant2 = a1 * c2 - c1 * a2
+        
+        let res1 = determinant1.quotientAndRemainder(dividingBy: determinant)
+        let res2 = determinant2.quotientAndRemainder(dividingBy: determinant)
+        guard res1.remainder == 0, res2.remainder == 0 else {
+            // Result is not integer.
+            return nil
+        }
+        
+        return (res1.quotient, res2.quotient)
+    }
+    
 }

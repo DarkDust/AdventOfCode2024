@@ -57,4 +57,9 @@ struct NumberAlgorithmsTests {
         #expect(123_456.concatenate(789) == 123456789)
     }
     
+    @Test
+    func cramersRule() {
+        #expect(NumberAlgorithms.cramersRule(a1: 94, b1: 22, c1: 8400, a2: 34, b2: 67, c2: 5400)! == (80, 40))
+    }
+    
 }
