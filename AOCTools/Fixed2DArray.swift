@@ -10,7 +10,7 @@ import Foundation
 
 /// A two-dimensional array of fixed size.
 ///
-/// For a variant with additional features for 2D maps, see ``FieldMap``.
+/// For a variant with additional features for 2D maps, see ``FieldGrid``.
 public
 struct Fixed2DArray<T> {
     

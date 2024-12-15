@@ -1,5 +1,5 @@
 //
-//  FieldMap+AStar.swift
+//  AStar.swift
 //  AdventOfCode2024
 //
 //  Created by Marc Haisenko on 2024-11-04.

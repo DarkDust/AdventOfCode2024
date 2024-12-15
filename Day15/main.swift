@@ -47,7 +47,7 @@ enum Field: FieldProtocol, CustomStringConvertible {
     }
 }
 
-func move(grid: FieldMap<Field>, robot: Coord, direction: Direction) throws -> (FieldMap<Field>, Coord) {
+func move(grid: FieldGrid<Field>, robot: Coord, direction: Direction) throws -> (FieldGrid<Field>, Coord) {
     // Don't need to check whether the robot is in bounds since there's a wall all around.
     let updatedRobot = robot.neighbour(direction: direction)
     let field = grid[updatedRobot]
@@ -69,7 +69,7 @@ func move(grid: FieldMap<Field>, robot: Coord, direction: Direction) throws -> (
     
 }
 
-func move(grid: inout FieldMap<Field>, coord: Coord, direction: Direction) throws  -> Bool {
+func move(grid: inout FieldGrid<Field>, coord: Coord, direction: Direction) throws  -> Bool {
     let box = grid[coord]
     let nextCoord = coord.neighbour(direction: direction)
     let firstBox: (Field, Coord)
@@ -200,7 +200,7 @@ runPart(.input) {
         throw DayError.invalidInput
     }
     
-    var grid = try FieldMap<Field>(lines[..<delimiter])
+    var grid = try FieldGrid<Field>(lines[..<delimiter])
     guard var robot = grid.findFirst(.robot) else {
         throw DayError.missingRobot
     }
@@ -234,9 +234,9 @@ runPart(.input) {
         throw DayError.invalidInput
     }
     
-    let originalGrid = try FieldMap<Field>(lines[..<delimiter])
+    let originalGrid = try FieldGrid<Field>(lines[..<delimiter])
     // Scale-up the grid.
-    var grid = FieldMap<Field>(width: originalGrid.width * 2, height: originalGrid.height, repeating: .empty)
+    var grid = FieldGrid<Field>(width: originalGrid.width * 2, height: originalGrid.height, repeating: .empty)
     for (coord, field) in originalGrid {
         switch field {
         case .empty:

@@ -1,20 +1,20 @@
 //
-//  FieldMap.swift
+//  FieldGrid.swift
 //  AdventOfCode2024
 //
 //  Created by Marc Haisenko on 2024-11-03.
 //
 
-/// Protocol for fields in the ``FieldMap``.
+/// Protocol for fields in the ``FieldGrid``.
 public
 protocol FieldProtocol {
     static func parse(_ input: Character) -> Self?
 }
 
 
-/// Errors for the ``FieldMap``.
+/// Errors for the ``FieldGrid``.
 public
-enum FieldMapError: Error {
+enum FieldGridError: Error {
     case invalidInput
 }
 
@@ -23,22 +23,22 @@ enum FieldMapError: Error {
 ///
 /// For a simpler, generic two-dimensional version see ``Fixed2DArray``.
 public
-struct FieldMap<Field: FieldProtocol> {
+struct FieldGrid<Field: FieldProtocol> {
     
     /// Fields as a contiguous array.
     @usableFromInline internal
     var fields: [Field]
     
-    /// Width of the map.
+    /// Width of the grid.
     public
     let width: Int
     
-    /// Height of the map.
+    /// Height of the grid.
     public
     let height: Int
     
     
-    /// Initialize the map by parsing the given lines.
+    /// Initialize the grid by parsing the given lines.
     public
     init(_ lines: some Collection<some StringProtocol>) throws {
         self.width = lines.first?.count ?? 0
@@ -48,7 +48,7 @@ struct FieldMap<Field: FieldProtocol> {
         
         for line in lines {
             guard line.count == width else {
-                throw FieldMapError.invalidInput
+                throw FieldGridError.invalidInput
             }
             
             try line.utf8.withContiguousStorageIfAvailable {
@@ -56,7 +56,7 @@ struct FieldMap<Field: FieldProtocol> {
                 
                 for character in buffer {
                     guard let field = Field.parse(Character(Unicode.Scalar(character))) else {
-                        throw FieldMapError.invalidInput
+                        throw FieldGridError.invalidInput
                     }
                     
                     fields.append(field)
@@ -73,7 +73,7 @@ struct FieldMap<Field: FieldProtocol> {
     }
     
     
-    /// Initialize the map with a width, height, and initial value for all fields.
+    /// Initialize the grid with a width, height, and initial value for all fields.
     public
     init(width: Int, height: Int, repeating: Field) {
         self.width = width
@@ -86,7 +86,7 @@ struct FieldMap<Field: FieldProtocol> {
 
 // MARK: Field access
 public
-extension FieldMap {
+extension FieldGrid {
     
     /// Direct, unchecked field access.
     @inlinable
@@ -144,7 +144,7 @@ extension FieldMap {
 
 // MARK: Neighbours
 public
-extension FieldMap {
+extension FieldGrid {
     
     /// Get neighouring fields.
     ///
@@ -204,7 +204,7 @@ extension FieldMap {
 
 // MARK: Helpers
 public
-extension FieldMap where Field: Equatable {
+extension FieldGrid where Field: Equatable {
     
     /// Whether the coordinate is within the array's bounds.
     @inlinable
@@ -230,7 +230,7 @@ extension FieldMap where Field: Equatable {
     
     
     /// Get all fields starting at the giving position, moving in the given direction, until the
-    /// edge of the map is reached.
+    /// edge of the grid is reached.
     func fields(from: Coord, direction: Direction) -> [(Coord, Field)] {
         var result: [(Coord, Field)] = []
         var coord = from.neighbour(direction: direction)
@@ -248,7 +248,7 @@ extension FieldMap where Field: Equatable {
 
 // MARK: Raycasting
 public
-extension FieldMap {
+extension FieldGrid {
     
     /// Count the fields inside a shape.
     ///
@@ -289,30 +289,30 @@ extension FieldMap {
 
 
 // MARK: Iterators
-extension FieldMap: Sequence {
+extension FieldGrid: Sequence {
     
     public
-    func makeIterator() -> FieldMapIterator<Field> {
-        FieldMapIterator(map: self, index: 0)
+    func makeIterator() -> FieldGridIterator<Field> {
+        FieldGridIterator(grid: self, index: 0)
     }
     
 }
 
 
 public
-struct FieldMapIterator<Field: FieldProtocol>: Sequence, IteratorProtocol {
+struct FieldGridIterator<Field: FieldProtocol>: Sequence, IteratorProtocol {
     
     fileprivate
-    let map: FieldMap<Field>
+    let grid: FieldGrid<Field>
     
     fileprivate
     var index: Int
     
     public
     mutating func next() -> (coord: Coord, field: Field)? {
-        guard index < map.fields.count else { return nil }
-        let coord = Coord(x: index % map.width, y: index / map.width)
-        let field = map.fields[index]
+        guard index < grid.fields.count else { return nil }
+        let coord = Coord(x: index % grid.width, y: index / grid.width)
+        let field = grid.fields[index]
         index += 1
         return (coord, field)
     }
@@ -321,7 +321,7 @@ struct FieldMapIterator<Field: FieldProtocol>: Sequence, IteratorProtocol {
 
 
 // MARK: Dump
-public extension FieldMap where Field: CustomStringConvertible {
+public extension FieldGrid where Field: CustomStringConvertible {
     
     /// Convert the field to a string representation.
     func dump() -> String {
@@ -342,14 +342,14 @@ public extension FieldMap where Field: CustomStringConvertible {
 
 // MARK: Other protocol conformances
 
-extension FieldMap: Equatable where Field: Equatable { }
+extension FieldGrid: Equatable where Field: Equatable { }
 
-extension FieldMap: Hashable where Field: Hashable { }
+extension FieldGrid: Hashable where Field: Hashable { }
 
-extension FieldMap: Sendable where Field: Sendable { }
+extension FieldGrid: Sendable where Field: Sendable { }
 
 
-// MARK: Standard field maps
+// MARK: Standard field grids
 
 extension Int: FieldProtocol {
     

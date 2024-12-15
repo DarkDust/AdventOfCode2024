@@ -36,18 +36,18 @@ enum Outcome {
 }
 
 
-func walk(map: FieldMap<Field>, from: Coord) -> Outcome {
+func walk(grid: FieldGrid<Field>, from: Coord) -> Outcome {
     var cursor = from
     var direction: Direction = .north
     var visited: [Coord: Int] = [cursor: 1]
     
     while true {
         let ahead = cursor + direction
-        guard map.isInBounds(ahead) else {
+        guard grid.isInBounds(ahead) else {
             return .exit(visited: Set(visited.keys))
         }
         
-        if map[ahead] == .obstacle {
+        if grid[ahead] == .obstacle {
             direction = direction.turn(.right)
             
         } else {
@@ -66,12 +66,12 @@ func walk(map: FieldMap<Field>, from: Coord) -> Outcome {
 runPart(.input) {
     (lines) in
     
-    let map = try FieldMap<Field>(lines)
-    guard let watchPos = map.findFirst(.watch) else {
+    let grid = try FieldGrid<Field>(lines)
+    guard let watchPos = grid.findFirst(.watch) else {
         throw DayError.missingWatch
     }
     
-    switch walk(map: map, from: watchPos) {
+    switch walk(grid: grid, from: watchPos) {
     case .exit(let visited):
         print("Part 1: \(visited.count)")
         
@@ -84,7 +84,7 @@ runPart(.input) {
 await runPart(.input) {
     (lines) in
     
-    let original = try FieldMap<Field>(lines)
+    let original = try FieldGrid<Field>(lines)
     guard let watchPos = original.findFirst(.watch) else {
         throw DayError.missingWatch
     }
@@ -97,7 +97,7 @@ await runPart(.input) {
     // fields that are actually worth putting an obstacle into.
     
     let candidates: Set<Coord>
-    switch walk(map: original, from: watchPos) {
+    switch walk(grid: original, from: watchPos) {
     case .exit(let visited):
         candidates = visited.subtracting([watchPos])
         
@@ -109,10 +109,10 @@ await runPart(.input) {
     let loops = await candidates.mapAndReduce(0) {
         (candidate) in
         
-        var map = original
-        map[candidate] = .obstacle
+        var grid = original
+        grid[candidate] = .obstacle
         
-        switch walk(map: map, from: watchPos) {
+        switch walk(grid: grid, from: watchPos) {
         case .exit: return 0
         case .loop: return 1
         }

@@ -159,18 +159,18 @@ struct Shape {
 
 
 func parse(_ lines: [Substring]) throws -> [Shape] {
-    let map = try FieldMap<Character>(lines)
+    let grid = try FieldGrid<Character>(lines)
     var processed: Set<Coord> = []
     var shapes: [Shape] = []
     
-    for (coord, field) in map {
+    for (coord, field) in grid {
         if processed.contains(coord) { continue }
         
         var shape = Shape(field: field)
         
         var candidates = [coord]
         while let candidate = candidates.popLast() {
-            guard map.isInBounds(candidate), !shape.coords.contains(candidate), map[candidate] == field else {
+            guard grid.isInBounds(candidate), !shape.coords.contains(candidate), grid[candidate] == field else {
                 continue
             }
             shape.add(candidate)
