@@ -40,7 +40,7 @@ struct FieldMap<Field: FieldProtocol> {
     
     /// Initialize the map by parsing the given lines.
     public
-    init(_ lines: [any StringProtocol]) throws {
+    init(_ lines: some Collection<some StringProtocol>) throws {
         self.width = lines.first?.count ?? 0
         self.height = lines.count
         var fields: [Field] = []
@@ -226,6 +226,21 @@ extension FieldMap where Field: Equatable {
         guard let index else { return nil }
         
         return Coord(x: index % self.width, y: index / self.width)
+    }
+    
+    
+    /// Get all fields starting at the giving position, moving in the given direction, until the
+    /// edge of the map is reached.
+    func fields(from: Coord, direction: Direction) -> [(Coord, Field)] {
+        var result: [(Coord, Field)] = []
+        var coord = from.neighbour(direction: direction)
+        
+        while isInBounds(coord) {
+            result.append((coord, self[coord]))
+            coord = coord.neighbour(direction: direction)
+        }
+        
+        return result
     }
     
 }
