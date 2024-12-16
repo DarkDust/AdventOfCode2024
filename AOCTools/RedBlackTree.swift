@@ -440,13 +440,13 @@ extension RedBlackTree {
                     sibling = parent.rightChild
                 }
                 
-                if sibling?.leftChild?.color == .black, sibling?.rightChild?.color == .black {
+                if sibling?.leftChild?.color != .red, sibling?.rightChild?.color != .red {
                     sibling?.color = .red
                     node = parent
                     continue
                 }
                 
-                if sibling?.rightChild?.color == .black {
+                if sibling?.rightChild?.color != .red {
                     sibling?.leftChild?.color = .black
                     sibling?.color = .red
                     if let sibling {
@@ -470,13 +470,13 @@ extension RedBlackTree {
                     sibling = parent.leftChild
                 }
                 
-                if sibling?.leftChild?.color == .black, sibling?.rightChild?.color == .black {
+                if sibling?.leftChild?.color != .red, sibling?.rightChild?.color != .red {
                     sibling?.color = .red
                     node = parent
                     continue
                 }
                 
-                if sibling?.leftChild?.color == .black {
+                if sibling?.leftChild?.color != .red {
                     sibling?.rightChild?.color = .black
                     sibling?.color = .red
                     if let sibling {
