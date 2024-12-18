@@ -48,8 +48,14 @@ struct AStar<Node: Hashable> {
         var gScore: [Node: Int] = [:]
         var fScore: [Node: Int] = [:]
         var cameFrom: [Node: Node] = [:]
+        var visited: Set<Node> = []
         
         for start in starts {
+            // Edge-case: start == goal.
+            if isGoal(start) {
+                return ([start], 0)
+            }
+            
             openSet.insert(0, value: start)
         }
         
@@ -61,7 +67,12 @@ struct AStar<Node: Hashable> {
                 return (path, gScore[current.value] ?? 0)
             }
             
+            visited.insert(current.value)
+            
             for neighbour in self.neighbours(current.value) {
+                // Avoid loops.
+                guard !visited.contains(neighbour) else { continue }
+                
                 let tentativeGScore = gScore[current.value, default: 0]
                     + self.cost(current.value, neighbour)
                 guard tentativeGScore < gScore[neighbour, default: .max] else { continue }
