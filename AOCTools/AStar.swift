@@ -22,17 +22,25 @@ struct AStar<Node: Hashable> {
     public
     let cost: (Node, Node) -> Int
     
+    /// Check whether a node is a goal.
+    public
+    let isGoal: (Node) -> Bool
+    
+    
     /// Designated initializer.
     ///
+    /// - parameter isGoal: Check whether a node is a goal.
     /// - parameter neighbours: Get neighbours of a given node.
     /// - parameter estimateCosts: Estimate the cost from a node to the goal.
     /// - parameter cost: Get the cost from one node to another.
     public
     init(
+        isGoal: @escaping (Node) -> Bool,
         neighbours: @escaping (Node) -> [Node],
         estimateCost: @escaping (Node) -> Int,
         cost: @escaping (Node, Node) -> Int
     ) {
+        self.isGoal = isGoal
         self.neighbours = neighbours
         self.estimateCost = estimateCost
         self.cost = cost
@@ -40,10 +48,7 @@ struct AStar<Node: Hashable> {
     
     /// Find a path using the A* algorithm.
     public
-    func findPath(
-        starts: [Node],
-        isGoal: (Node) -> Bool
-    ) -> (path: [Node], cost: Int)? {
+    func findPath(starts: [Node]) -> (path: [Node], cost: Int)? {
         let openSet: RedBlackTree<Int, Node> = []
         var gScore: [Node: Int] = [:]
         var fScore: [Node: Int] = [:]
@@ -102,10 +107,7 @@ struct AStar<Node: Hashable> {
     /// Find a path using the A* algorithm, returning the score.
     /// Faster than ``findPath(start:,isGoal:)`` since the actual path is not tracked.
     public
-    func findPathScore(
-        starts: [Node],
-        isGoal: (Node) -> Bool
-    ) -> Int? {
+    func findPathScore(starts: [Node]) -> Int? {
         // NOTE: This currently also skips updating the fScore, which works for the 2023-Day17
         // scenario but might give wrong results in other scenarios.
         
@@ -142,10 +144,7 @@ struct AStar<Node: Hashable> {
     
     /// Find all optimal paths (having equal scores) using the A* algorithm.
     public
-    func findAllPaths(
-        starts: [Node],
-        isGoal: (Node) -> Bool
-    ) -> (paths: [[Node]], cost: Int)? {
+    func findAllPaths(starts: [Node]) -> (paths: [[Node]], cost: Int)? {
         let openSet: RedBlackTree<Int, Node> = []
         var gScore: [Node: Int] = [:]
         var fScore: [Node: Int] = [:]
@@ -219,6 +218,7 @@ struct AStar<Node: Hashable> {
 }
 
 
+// MARK: - Private helpers
 private
 extension AStar {
     
@@ -267,5 +267,4 @@ extension AStar {
         return result
     }
     
-
 }
