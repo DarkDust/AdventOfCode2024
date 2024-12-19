@@ -252,6 +252,21 @@ extension Coord {
 }
 
 
+// MARK: Convenience
+public
+extension Coord {
+    
+    /// Initialize using a simple string representation.
+    init?(_ string: some StringProtocol, delimiter: String = ",") {
+        let components = string.split(separator: delimiter)
+        guard components.count == 2 else { return nil }
+        guard let x = Int(components[0]), let y = Int(components[1]) else { return nil }
+        self.x = x
+        self.y = y
+    }
+    
+}
+
 // MARK: Debugging
 @DebugDescription
 extension Coord: CustomDebugStringConvertible {
