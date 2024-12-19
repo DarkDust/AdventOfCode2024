@@ -114,7 +114,6 @@ struct AStar<Node: Hashable> {
         
         for start in starts {
             openSet.insert(0, value: start)
-            openSet.insert(0, value: start)
         }
         
         while let current = openSet.removeMinimum() {
@@ -140,6 +139,83 @@ struct AStar<Node: Hashable> {
         return nil
     }
     
+    
+    /// Find all optimal paths (having equal scores) using the A* algorithm.
+    public
+    func findAllPaths(
+        starts: [Node],
+        isGoal: (Node) -> Bool
+    ) -> (paths: [[Node]], cost: Int)? {
+        let openSet: RedBlackTree<Int, Node> = []
+        var gScore: [Node: Int] = [:]
+        var fScore: [Node: Int] = [:]
+        // Instead of tracking _the_ parent of a node, track _all_ parents of each node.
+        var cameFrom: [Node: Set<Node>] = [:]
+        var visited: [Node: Int] = [:]
+        var bestScore: Int?
+        var goals: Set<Node> = []
+        
+        for start in starts {
+            // Edge-case: start == goal.
+            if isGoal(start) {
+                return ([[start]], 0)
+            }
+            
+            openSet.insert(0, value: start)
+        }
+        
+        while let current = openSet.removeMinimum() {
+            if isGoal(current.value) {
+                assert(gScore[current.value] != nil)
+                let score = gScore[current.value] ?? .max
+                
+                if let bestScore {
+                    if score > bestScore {
+                        continue
+                    }
+                } else {
+                    bestScore = gScore[current.value]
+                }
+                goals.insert(current.value)
+                continue
+            }
+            
+            visited[current.value] = gScore[current.value]
+            
+            for neighbour in self.neighbours(current.value) {
+                let tentativeGScore = gScore[current.value, default: 0]
+                    + self.cost(current.value, neighbour)
+                if visited[neighbour, default: .max] < tentativeGScore {
+                    continue
+                }
+                if tentativeGScore > gScore[neighbour, default: .max] { continue }
+                
+                cameFrom[neighbour, default: []].insert(current.value)
+                gScore[neighbour] = tentativeGScore
+                
+                let newFScore = tentativeGScore + estimateCost(neighbour)
+                if let oldFScore = fScore[neighbour] {
+                    if oldFScore == newFScore {
+                        continue
+                    }
+                    
+                    openSet.remove(key: oldFScore, value: neighbour)
+                }
+                fScore[neighbour] = newFScore
+                openSet.insert(newFScore, value: neighbour)
+            }
+        }
+        
+        if let bestScore {
+            for start in starts {
+                cameFrom.removeValue(forKey: start)
+            }
+            return (reconstructAllPaths(cameFrom: cameFrom, current: goals), bestScore)
+        } else {
+            // No path found
+            return nil
+        }
+    }
 }
 
 
@@ -167,4 +243,29 @@ extension AStar {
         return path.reversed()
     }
     
+    func reconstructAllPaths(cameFrom: [Node: Set<Node>], current: Set<Node>) -> [[Node]] {
+        var result: [[Node]] = []
+        
+        var workingPaths: [[Node]] = []
+        for node in current {
+            workingPaths.append([node])
+        }
+        
+        while !workingPaths.isEmpty {
+            let path = workingPaths.removeLast()
+            let lastNode = path.last!
+            
+            if let nexts = cameFrom[lastNode] {
+                for next in nexts {
+                    workingPaths.append(path + [next])
+                }
+            } else {
+                result.append(path.reversed())
+            }
+        }
+        
+        return result
+    }
+    
+
 }
