@@ -170,7 +170,7 @@ extension Coord {
     /// to the other.
     /// In other words, calculate the distance with only north, east, south, and west movements.
     @inlinable
-    func rightAngledDistance(to other: Coord) -> Int {
+    func manhattanDistance(to other: Coord) -> Int {
         (max(self.x, other.x) - min(self.x, other.x)) + (max(self.y, other.y) - min(self.y, other.y))
     }
     
