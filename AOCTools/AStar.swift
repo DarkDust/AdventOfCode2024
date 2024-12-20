@@ -46,6 +46,14 @@ struct AStar<Node: Hashable> {
         self.cost = cost
     }
     
+    
+    /// Find a path using the A* algorithm.
+    public
+    func findPath(start: Node) -> (path: [Node], cost: Int)? {
+        return findPath(starts: [start])
+    }
+    
+    
     /// Find a path using the A* algorithm.
     public
     func findPath(starts: [Node]) -> (path: [Node], cost: Int)? {
@@ -139,6 +147,13 @@ struct AStar<Node: Hashable> {
         
         // No path found
         return nil
+    }
+    
+    
+    /// Find all optimal paths (having equal scores) using the A* algorithm.
+    public
+    func findAllPaths(start: Node) -> (paths: [[Node]], cost: Int)? {
+        return findAllPaths(starts: [start])
     }
     
     

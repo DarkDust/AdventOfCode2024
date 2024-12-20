@@ -55,7 +55,32 @@ struct Elk: Hashable {
     }
 }
 
-
+#if false
+func parse(_ lines: [Substring]) throws -> (pathfinder: Dijkstra<Elk>, start: Elk) {
+    var grid = try FieldGrid<Field>(lines)
+    guard let start = grid.findFirst(.start), let goal = grid.findFirst(.goal) else { fatalError() }
+    grid[start] = .empty
+    grid[goal] = .empty
+    
+    let dijkstra = Dijkstra<Elk>() {
+        $0.position == goal
+    } neighbours: {
+        $0.neighbours.filter {
+            grid.isInBounds($0.position) && grid[$0.position] == .empty
+        }
+    } cost: {
+        (from, to) in
+        // Assume the distance is always 1. Just need to detect a turn.
+        if from.direction != to.direction {
+            return 1001
+        } else {
+            return 1
+        }
+    }
+    
+    return (dijkstra, Elk(position: start, direction: .east))
+}
+#else
 func parse(_ lines: [Substring]) throws -> (pathfinder: AStar<Elk>, start: Elk) {
     var grid = try FieldGrid<Field>(lines)
     guard let start = grid.findFirst(.start), let goal = grid.findFirst(.goal) else { fatalError() }
@@ -82,13 +107,14 @@ func parse(_ lines: [Substring]) throws -> (pathfinder: AStar<Elk>, start: Elk) 
     
     return (aStar, Elk(position: start, direction: .east))
 }
+#endif
 
 
 runPart(.input) {
     (lines) in
     
     let (pathfinder, startElk) = try parse(lines)
-    let solution = pathfinder.findPath(starts: [startElk])!
+    let solution = pathfinder.findPath(start: startElk)!
     print("Part 1: \(solution.cost)")
 }
 
@@ -96,7 +122,7 @@ runPart(.input) {
     (lines) in
     
     let (pathfinder, startElk) = try parse(lines)
-    let solutions = pathfinder.findAllPaths(starts: [startElk])!
+    let solutions = pathfinder.findAllPaths(start: startElk)!
     
     var visited: Set<Coord> = []
     for path in solutions.paths {
