@@ -129,7 +129,7 @@ struct AStar<Node: Hashable> {
         while let current = openSet.removeMinimum() {
             if isGoal(current.value) {
                 // Reconstruct path
-                assert(gScore[current.value] != nil)
+                assert(gScore[current.value] != nil || starts.contains(current.value))
                 return gScore[current.value] ?? 0
             }
             
