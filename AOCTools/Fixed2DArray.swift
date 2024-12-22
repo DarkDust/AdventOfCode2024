@@ -130,6 +130,35 @@ extension Fixed2DArray: Collection {
     @inlinable public
     func makeIterator() -> IndexingIterator<[T]> { data.makeIterator() }
     
+    /// Enumerate the grid in (Coord, T) tuples.
+    public
+    func enumerated() -> Fixed2DArrayEnumerator<T> {
+        Fixed2DArrayEnumerator(grid: self, index: 0)
+    }
+    
+}
+
+
+// MARK: Enumeration
+
+public
+struct Fixed2DArrayEnumerator<T>: Sequence, IteratorProtocol {
+    
+    fileprivate
+    let grid: Fixed2DArray<T>
+    
+    fileprivate
+    var index: Int
+    
+    public
+    mutating func next() -> (coord: Coord, value: T)? {
+        guard index < grid.data.count else { return nil }
+        let coord = Coord(x: index % grid.columns, y: index / grid.columns)
+        let field = grid.data[index]
+        index += 1
+        return (coord, field)
+    }
+    
 }
 
 
