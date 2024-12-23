@@ -185,21 +185,21 @@ class StateCache {
     
     
     private
-    var cache: [StateKey: [Button]] = [:]
+    var cache: [StateKey: Int] = [:]
     
     
     func snapshot(state: State, previousButton: Button) -> Int {
         let key = StateKey(layer: state.layer, from: previousButton, to: state.button)
         let recorded = state.getRecorded()
-        let addition = recorded[state.lastCacheOffset...]
+        let addition = recorded - state.lastRecorded
         
-        cache[key] = Array(addition)
+        cache[key] = addition
         
-        return recorded.count
+        return recorded
     }
     
     
-    func lookup(state: State, nextButton: Button) -> [Button]? {
+    func lookup(state: State, nextButton: Button) -> Int? {
         let key = StateKey(layer: state.layer, from: state.button, to: nextButton)
         return cache[key]
     }
@@ -217,8 +217,8 @@ class State {
     let button: Button
     let nextButtons: any Collection<Button>
     let childState: State?
-    let recorded: [Button]?
-    var lastCacheOffset: Int
+    let recorded: Int
+    var lastRecorded: Int
     
     
     init(layer: Int, nextButtons: any Collection<Button> = [], childState: State) {
@@ -226,8 +226,8 @@ class State {
         self.button = .A
         self.nextButtons = nextButtons
         self.childState = childState
-        self.recorded = nil
-        self.lastCacheOffset = 0
+        self.recorded = 0
+        self.lastRecorded = 0
     }
     
     
@@ -236,8 +236,8 @@ class State {
         self.button = .A
         self.nextButtons = []
         self.childState = nil
-        self.recorded = []
-        self.lastCacheOffset = 0
+        self.recorded = 0
+        self.lastRecorded = 0
     }
     
     
@@ -247,15 +247,15 @@ class State {
         button: Button,
         nextButtons: any Collection<Button>,
         childState: State?,
-        recorded: [Button]?,
-        lastCacheOffset: Int
+        recorded: Int,
+        lastRecorded: Int
     ) {
         self.layer = layer
         self.button = button
         self.nextButtons = nextButtons
         self.childState = childState
         self.recorded = recorded
-        self.lastCacheOffset = lastCacheOffset
+        self.lastRecorded = lastRecorded
     }
     
     
@@ -291,7 +291,7 @@ class State {
                 nextButtons: self.nextButtons.dropFirst(),
                 childState: state,
                 recorded: self.recorded,
-                lastCacheOffset: offset
+                lastRecorded: offset
             )
         }
         
@@ -304,7 +304,7 @@ class State {
         labelMovement: for movement in movements {
             var nextState = childState.withNextButtons(movement + [.A])
             while nextState.canAdvance {
-                if let bestResultLength, nextState.getRecorded().count >= bestResultLength {
+                if let bestResultLength, nextState.getRecorded() >= bestResultLength {
                     // Not worth exploring this option further
                     continue labelMovement
                 }
@@ -313,8 +313,8 @@ class State {
             }
             
             let moves = nextState.getRecorded()
-            if moves.count < bestResultLength ?? .max {
-                bestResultLength = moves.count
+            if moves < bestResultLength ?? .max {
+                bestResultLength = moves
                 bestResult = nextState
             }
         }
@@ -325,18 +325,18 @@ class State {
             nextButtons: nextNextButtons,
             childState: bestResult!,
             recorded: self.recorded,
-            lastCacheOffset: self.lastCacheOffset
+            lastRecorded: self.lastRecorded
         )
-        newState.lastCacheOffset = cache.snapshot(state: newState, previousButton: self.button)
+        newState.lastRecorded = cache.snapshot(state: newState, previousButton: self.button)
         return newState
     }
     
     
-    func getRecorded() -> [Button] {
+    func getRecorded() -> Int {
         if let childState {
             return childState.getRecorded()
         } else {
-            return recorded ?? []
+            return recorded
         }
     }
     
@@ -350,7 +350,7 @@ class State {
             nextButtons: buttons,
             childState: self.childState,
             recorded: self.recorded,
-            lastCacheOffset: self.lastCacheOffset
+            lastRecorded: self.lastRecorded
         )
     }
     
@@ -363,7 +363,7 @@ class State {
             nextButtons: self.nextButtons,
             childState: childState,
             recorded: self.recorded,
-            lastCacheOffset: self.lastCacheOffset
+            lastRecorded: self.lastRecorded
         )
     }
     
@@ -377,34 +377,34 @@ class State {
             button: button,
             nextButtons: self.nextButtons.dropFirst(),
             childState: nil,
-            recorded: (self.recorded ?? []) + [button],
-            lastCacheOffset: self.lastCacheOffset
+            recorded: self.recorded + 1,
+            lastRecorded: self.lastRecorded
         )
     }
     
     private
-    func applyCached(_ buttons: [Button]) -> (State, Int) {
+    func applyCached(_ additions: Int) -> (State, Int) {
         if let childState {
-            let (state, offset) = childState.applyCached(buttons)
+            let (state, offset) = childState.applyCached(additions)
             return (State(
                 layer: self.layer,
                 button: self.button,
                 nextButtons: self.nextButtons,
                 childState: state,
                 recorded: self.recorded,
-                lastCacheOffset: offset
+                lastRecorded: offset
             ), offset)
             
         } else {
-            let combined = (self.recorded ?? []) + buttons
+            let combined = self.recorded + additions
             return (State(
                 layer: self.layer,
                 button: self.button,
                 nextButtons: self.nextButtons,
                 childState: nil,
                 recorded: combined,
-                lastCacheOffset: combined.count
-            ), combined.count)
+                lastRecorded: combined
+            ), combined)
         }
     }
     
@@ -431,14 +431,14 @@ func calculateBestMovement(buttonMap: ButtonMap, buttons: [Button], robots: Int)
     while let state = stack.popLast() {
         guard state.canAdvance else {
             let moves = state.getRecorded()
-            if moves.count < fewestMoves ?? .max {
-                fewestMoves = moves.count
+            if moves < fewestMoves ?? .max {
+                fewestMoves = moves
             }
-            fewestMoves = min(fewestMoves ?? .max, moves.count)
+            fewestMoves = min(fewestMoves ?? .max, moves)
             continue
         }
         
-        if let fewestMoves, state.getRecorded().count >= fewestMoves {
+        if let fewestMoves, state.getRecorded() >= fewestMoves {
             // Not worth exploring this option further
             continue
         }
@@ -508,9 +508,7 @@ runPart(.input) {
 }
 
 // Still too slow, runs out of memory.
-#if false
 runPart(.input) {
     let total = calculateKeyPresses(lines: $0, robots: 25)
     print("Part 2: \(total)")
 }
-#endif
