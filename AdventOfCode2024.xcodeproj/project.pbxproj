@@ -22,6 +22,8 @@
 		49562DAE2D15776C00A0AFED /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		49562DBF2D1593C700A0AFED /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		49562DCA2D16C4E200A0AFED /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 49562DC92D16C4E200A0AFED /* Collections */; };
+		49562DD62D18082F00A0AFED /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
+		49562DE12D181C9A00A0AFED /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 49562DE02D181C9A00A0AFED /* Algorithms */; };
 		49562DED2D1885C400A0AFED /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
 		49562DF52D18942A00A0AFED /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 49562DF42D18942A00A0AFED /* Algorithms */; };
 		498240DE2D08DA6100B956EA /* libAOCTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498ABD3D2CD58E4600C61A33 /* libAOCTools.dylib */; };
@@ -125,6 +127,15 @@
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 		49562DB62D1593B600A0AFED /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		49562DCD2D18081F00A0AFED /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -253,6 +264,7 @@
 		49562D962D14915500A0AFED /* Day18 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day18; sourceTree = BUILT_PRODUCTS_DIR; };
 		49562DA72D15776700A0AFED /* Day19 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day19; sourceTree = BUILT_PRODUCTS_DIR; };
 		49562DB82D1593B600A0AFED /* Day20 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day20; sourceTree = BUILT_PRODUCTS_DIR; };
+		49562DCF2D18081F00A0AFED /* Day21 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day21; sourceTree = BUILT_PRODUCTS_DIR; };
 		49562DE62D1885BE00A0AFED /* Day22 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day22; sourceTree = BUILT_PRODUCTS_DIR; };
 		498240D72D08DA4500B956EA /* Day10 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day10; sourceTree = BUILT_PRODUCTS_DIR; };
 		498240E32D0A065F00B956EA /* Day11 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Day11; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -314,6 +326,11 @@
 		49562DB92D1593B600A0AFED /* Day20 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Day20;
+			sourceTree = "<group>";
+		};
+		49562DD02D18081F00A0AFED /* Day21 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Day21;
 			sourceTree = "<group>";
 		};
 		49562DE72D1885BE00A0AFED /* Day22 */ = {
@@ -460,6 +477,15 @@
 			files = (
 				49562DCA2D16C4E200A0AFED /* Collections in Frameworks */,
 				49562DBF2D1593C700A0AFED /* libAOCTools.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49562DCC2D18081F00A0AFED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49562DE12D181C9A00A0AFED /* Algorithms in Frameworks */,
+				49562DD62D18082F00A0AFED /* libAOCTools.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,6 +637,7 @@
 				49562D972D14915500A0AFED /* Day18 */,
 				49562DA82D15776700A0AFED /* Day19 */,
 				49562DB92D1593B600A0AFED /* Day20 */,
+				49562DD02D18081F00A0AFED /* Day21 */,
 				49562DE72D1885BE00A0AFED /* Day22 */,
 				498ABD512CD58E8D00C61A33 /* Frameworks */,
 				498ABD302CD58DD300C61A33 /* Products */,
@@ -642,6 +669,7 @@
 				49562D962D14915500A0AFED /* Day18 */,
 				49562DA72D15776700A0AFED /* Day19 */,
 				49562DB82D1593B600A0AFED /* Day20 */,
+				49562DCF2D18081F00A0AFED /* Day21 */,
 				49562DE62D1885BE00A0AFED /* Day22 */,
 			);
 			name = Products;
@@ -865,6 +893,29 @@
 			);
 			productName = Day20;
 			productReference = 49562DB82D1593B600A0AFED /* Day20 */;
+			productType = "com.apple.product-type.tool";
+		};
+		49562DCE2D18081F00A0AFED /* Day21 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49562DD32D18081F00A0AFED /* Build configuration list for PBXNativeTarget "Day21" */;
+			buildPhases = (
+				49562DCB2D18081F00A0AFED /* Sources */,
+				49562DCC2D18081F00A0AFED /* Frameworks */,
+				49562DCD2D18081F00A0AFED /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				49562DD02D18081F00A0AFED /* Day21 */,
+			);
+			name = Day21;
+			packageProductDependencies = (
+				49562DE02D181C9A00A0AFED /* Algorithms */,
+			);
+			productName = Day21;
+			productReference = 49562DCF2D18081F00A0AFED /* Day21 */;
 			productType = "com.apple.product-type.tool";
 		};
 		49562DE52D1885BE00A0AFED /* Day22 */ = {
@@ -1221,6 +1272,9 @@
 					49562DB72D1593B600A0AFED = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					49562DCE2D18081F00A0AFED = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					49562DE52D1885BE00A0AFED = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -1306,6 +1360,7 @@
 				49562D952D14915500A0AFED /* Day18 */,
 				49562DA62D15776700A0AFED /* Day19 */,
 				49562DB72D1593B600A0AFED /* Day20 */,
+				49562DCE2D18081F00A0AFED /* Day21 */,
 				49562DE52D1885BE00A0AFED /* Day22 */,
 			);
 		};
@@ -1379,6 +1434,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		49562DB42D1593B600A0AFED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49562DCB2D18081F00A0AFED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1614,6 +1676,20 @@
 			name = Debug;
 		};
 		49562DBE2D1593B600A0AFED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		49562DD42D18081F00A0AFED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		49562DD52D18081F00A0AFED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2088,6 +2164,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		49562DD32D18081F00A0AFED /* Build configuration list for PBXNativeTarget "Day21" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49562DD42D18081F00A0AFED /* Debug */,
+				49562DD52D18081F00A0AFED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		49562DEA2D1885BE00A0AFED /* Build configuration list for PBXNativeTarget "Day22" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2254,6 +2339,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 49CC387C2CD95ED000482D01 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
+		};
+		49562DE02D181C9A00A0AFED /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4999274A2CE0D46100505E3F /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
 		};
 		49562DF42D18942A00A0AFED /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
