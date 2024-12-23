@@ -10,7 +10,7 @@ import AOCTools
 import Algorithms
 
 
-enum Button: Int, CustomDebugStringConvertible {
+enum Button: Int8, CustomDebugStringConvertible {
     case num0
     case num1
     case num2
@@ -169,32 +169,75 @@ func determineButtonSequences(grid: Fixed2DArray<Button?>, from: Coord, to: Coor
 }
 
 
+class StateCache {
+    
+    private
+    struct StateKey: Hashable {
+        let layer: Int
+        let from: Button
+        let to: Button
+    }
+    
+    
+    // Don't care about data isolation in AoC.
+    nonisolated(unsafe)
+    static let shared = StateCache()
+    
+    
+    private
+    var cache: [StateKey: [Button]] = [:]
+    
+    
+    func snapshot(state: State, previousButton: Button) -> Int {
+        let key = StateKey(layer: state.layer, from: previousButton, to: state.button)
+        let recorded = state.getRecorded()
+        let addition = recorded[state.lastCacheOffset...]
+        
+        cache[key] = Array(addition)
+        
+        return recorded.count
+    }
+    
+    
+    func lookup(state: State, nextButton: Button) -> [Button]? {
+        let key = StateKey(layer: state.layer, from: state.button, to: nextButton)
+        return cache[key]
+    }
+    
+    
+    func clear() {
+        cache.removeAll()
+    }
+    
+}
+
+
 class State {
     let layer: Int
     let button: Button
-    let previousButton: Button
     let nextButtons: any Collection<Button>
     let childState: State?
-    let recorded: [Button]
+    let recorded: [Button]?
+    var lastCacheOffset: Int
     
     
     init(layer: Int, nextButtons: any Collection<Button> = [], childState: State) {
         self.layer = layer
         self.button = .A
-        self.previousButton = .A
         self.nextButtons = nextButtons
         self.childState = childState
-        self.recorded = []
+        self.recorded = nil
+        self.lastCacheOffset = 0
     }
     
     
     init(layer: Int) {
         self.layer = layer
         self.button = .A
-        self.previousButton = .A
         self.nextButtons = []
         self.childState = nil
         self.recorded = []
+        self.lastCacheOffset = 0
     }
     
     
@@ -202,17 +245,17 @@ class State {
     init(
         layer: Int,
         button: Button,
-        previousButton: Button,
         nextButtons: any Collection<Button>,
         childState: State?,
-        recorded: [Button]
+        recorded: [Button]?,
+        lastCacheOffset: Int
     ) {
         self.layer = layer
         self.button = button
-        self.previousButton = previousButton
         self.nextButtons = nextButtons
         self.childState = childState
         self.recorded = recorded
+        self.lastCacheOffset = lastCacheOffset
     }
     
     
@@ -235,9 +278,21 @@ class State {
             return self.withChildState(nextState)
         }
         
-        assert(childState.isInAState())
         guard let nextButton = nextButtons.first else {
             fatalError("Must not get called when cannot advance")
+        }
+        
+        let cache = StateCache.shared
+        if let cached = cache.lookup(state: self, nextButton: nextButton) {
+            let (state, offset) = childState.applyCached(cached)
+            return State(
+                layer: self.layer,
+                button: nextButton,
+                nextButtons: self.nextButtons.dropFirst(),
+                childState: state,
+                recorded: self.recorded,
+                lastCacheOffset: offset
+            )
         }
         
         let nextNextButtons = nextButtons.dropFirst()
@@ -245,39 +300,35 @@ class State {
         
         var bestResult: State?
         var bestResultLength: Int?
-        var stack: [State] = []
         
-        for movement in movements {
-            let nextState = childState.withNextButtons(movement + [.A])
-            stack.append(nextState.advance(buttonMap: buttonMap))
-        }
-        
-        while let state = stack.popLast() {
-            guard state.canAdvance else {
-                let moves = state.getRecorded()
-                if moves.count < bestResultLength ?? .max {
-                    bestResultLength = moves.count
-                    bestResult = state
+        labelMovement: for movement in movements {
+            var nextState = childState.withNextButtons(movement + [.A])
+            while nextState.canAdvance {
+                if let bestResultLength, nextState.getRecorded().count >= bestResultLength {
+                    // Not worth exploring this option further
+                    continue labelMovement
                 }
-                continue
+                
+                nextState = nextState.advance(buttonMap: buttonMap)
             }
             
-            if let bestResultLength, state.getRecorded().count >= bestResultLength {
-                // Not worth exploring this option further
-                continue
+            let moves = nextState.getRecorded()
+            if moves.count < bestResultLength ?? .max {
+                bestResultLength = moves.count
+                bestResult = nextState
             }
-            
-            stack.append(state.advance(buttonMap: buttonMap))
         }
         
-        return State(
+        let newState = State(
             layer: self.layer,
             button: nextButton,
-            previousButton: self.button,
             nextButtons: nextNextButtons,
             childState: bestResult!,
-            recorded: self.recorded
+            recorded: self.recorded,
+            lastCacheOffset: self.lastCacheOffset
         )
+        newState.lastCacheOffset = cache.snapshot(state: newState, previousButton: self.button)
+        return newState
     }
     
     
@@ -285,18 +336,8 @@ class State {
         if let childState {
             return childState.getRecorded()
         } else {
-            return recorded
+            return recorded ?? []
         }
-    }
-    
-    
-    private
-    func isInAState() -> Bool {
-        guard self.button == .A else {
-            return false
-        }
-        
-        return self.childState?.isInAState() ?? true
     }
     
     
@@ -306,10 +347,10 @@ class State {
         return State(
             layer: self.layer,
             button: self.button,
-            previousButton: self.previousButton,
             nextButtons: buttons,
             childState: self.childState,
-            recorded: self.recorded
+            recorded: self.recorded,
+            lastCacheOffset: self.lastCacheOffset
         )
     }
     
@@ -319,10 +360,10 @@ class State {
         return State(
             layer: self.layer,
             button: self.button,
-            previousButton: self.previousButton,
             nextButtons: self.nextButtons,
             childState: childState,
-            recorded: self.recorded
+            recorded: self.recorded,
+            lastCacheOffset: self.lastCacheOffset
         )
     }
     
@@ -334,21 +375,47 @@ class State {
         return State(
             layer: self.layer,
             button: button,
-            previousButton: self.previousButton,
             nextButtons: self.nextButtons.dropFirst(),
             childState: nil,
-            recorded: self.recorded + [button]
+            recorded: (self.recorded ?? []) + [button],
+            lastCacheOffset: self.lastCacheOffset
         )
+    }
+    
+    private
+    func applyCached(_ buttons: [Button]) -> (State, Int) {
+        if let childState {
+            let (state, offset) = childState.applyCached(buttons)
+            return (State(
+                layer: self.layer,
+                button: self.button,
+                nextButtons: self.nextButtons,
+                childState: state,
+                recorded: self.recorded,
+                lastCacheOffset: offset
+            ), offset)
+            
+        } else {
+            let combined = (self.recorded ?? []) + buttons
+            return (State(
+                layer: self.layer,
+                button: self.button,
+                nextButtons: self.nextButtons,
+                childState: nil,
+                recorded: combined,
+                lastCacheOffset: combined.count
+            ), combined.count)
+        }
     }
     
 }
 
 
-func generateStartState(buttons: [Button], layers: Int) -> State {
-    let leaf = State(layer: layers + 1)
+func generateStartState(buttons: [Button], robots: Int) -> State {
+    let leaf = State(layer: robots + 1)
     var intermediate: State = leaf
     
-    for i in stride(from: layers, through: 1, by: -1) {
+    for i in stride(from: robots, through: 1, by: -1) {
         let state = State(layer: i, childState: intermediate)
         intermediate = state
     }
@@ -357,17 +424,15 @@ func generateStartState(buttons: [Button], layers: Int) -> State {
 }
 
 
-func calculateBestMovement(buttonMap: ButtonMap, buttons: [Button]) -> Int {
-    let start = generateStartState(buttons: buttons, layers: 2)
+func calculateBestMovement(buttonMap: ButtonMap, buttons: [Button], robots: Int) -> Int {
+    let start = generateStartState(buttons: buttons, robots: robots)
     var fewestMoves: Int?
-    var movesString = ""
     var stack: [State] = [start]
     while let state = stack.popLast() {
         guard state.canAdvance else {
             let moves = state.getRecorded()
             if moves.count < fewestMoves ?? .max {
                 fewestMoves = moves.count
-                movesString = moves.map { $0.debugDescription }.joined()
             }
             fewestMoves = min(fewestMoves ?? .max, moves.count)
             continue
@@ -381,7 +446,7 @@ func calculateBestMovement(buttonMap: ButtonMap, buttons: [Button]) -> Int {
         stack.append(state.advance(buttonMap: buttonMap))
     }
     
-    print(movesString)
+    print(fewestMoves!)
     return fewestMoves!
 }
 
@@ -394,16 +459,14 @@ func calculateMultiplicator(sequence: [Button]) -> Int {
         guard value < 10 else { continue }
         
         multi *= 10
-        multi += value
+        multi += Int(value)
     }
     
     return multi
 }
 
 
-runPart(.input) {
-    (lines) in
-    
+func calculateKeyPresses(lines: [Substring], robots: Int) -> Int {
     let numPadMap = buildButtonMap(layout: [
         [.num7, .num8, .num9],
         [.num4, .num5, .num6],
@@ -425,13 +488,29 @@ runPart(.input) {
         combinedMap[from] = combinedToMap
     }
     
+    StateCache.shared.clear()
+    
     let sequences = lines.map { $0.compactMap { Button($0) } }
     var total = 0
     for sequence in sequences {
-        let fewestMoves = calculateBestMovement(buttonMap: combinedMap, buttons: sequence)
+        let fewestMoves = calculateBestMovement(buttonMap: combinedMap, buttons: sequence, robots: robots)
         let multiplicator = calculateMultiplicator(sequence: sequence)
         total += multiplicator * fewestMoves
     }
     
+    return total
+}
+
+
+runPart(.input) {
+    let total = calculateKeyPresses(lines: $0, robots: 2)
     print("Part 1: \(total)")
 }
+
+// Still too slow, runs out of memory.
+#if false
+runPart(.input) {
+    let total = calculateKeyPresses(lines: $0, robots: 25)
+    print("Part 2: \(total)")
+}
+#endif
