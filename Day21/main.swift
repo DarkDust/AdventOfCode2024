@@ -170,22 +170,48 @@ func determineButtonSequences(grid: Fixed2DArray<Button?>, from: Coord, to: Coor
 
 
 class State {
+    let layer: Int
     let button: Button
+    let previousButton: Button
     let nextButtons: any Collection<Button>
     let childState: State?
     let recorded: [Button]
     
-    init(button: Button, nextButtons: any Collection<Button>, childState: State) {
-        self.button = button
+    
+    init(layer: Int, nextButtons: any Collection<Button> = [], childState: State) {
+        self.layer = layer
+        self.button = .A
+        self.previousButton = .A
         self.nextButtons = nextButtons
         self.childState = childState
         self.recorded = []
     }
     
-    init(button: Button, nextButtons: any Collection<Button>, recorded: [Button]) {
-        self.button = button
-        self.nextButtons = nextButtons
+    
+    init(layer: Int) {
+        self.layer = layer
+        self.button = .A
+        self.previousButton = .A
+        self.nextButtons = []
         self.childState = nil
+        self.recorded = []
+    }
+    
+    
+    private
+    init(
+        layer: Int,
+        button: Button,
+        previousButton: Button,
+        nextButtons: any Collection<Button>,
+        childState: State?,
+        recorded: [Button]
+    ) {
+        self.layer = layer
+        self.button = button
+        self.previousButton = previousButton
+        self.nextButtons = nextButtons
+        self.childState = childState
         self.recorded = recorded
     }
     
@@ -194,56 +220,66 @@ class State {
         !nextButtons.isEmpty || (childState?.canAdvance ?? false)
     }
     
-    func advance(buttonMap: ButtonMap) -> [State] {
+    
+    func advance(buttonMap: ButtonMap) -> State {
         guard let childState else {
             guard let nextButton = nextButtons.first else {
-                assertionFailure("Must not get called when cannot advance")
-                return []
+                fatalError("Must not get called when cannot advance")
             }
             
-            return [State(
-                button: nextButton,
-                nextButtons: nextButtons.dropFirst(),
-                recorded: recorded + [nextButton]
-            )]
+            return self.withRecord(nextButton)
         }
         
         if childState.canAdvance {
-            let nextStates = childState.advance(buttonMap: buttonMap)
-            return nextStates.map {
-                State(button: button, nextButtons: nextButtons, childState: $0)
-            }
+            let nextState = childState.advance(buttonMap: buttonMap)
+            return self.withChildState(nextState)
         }
         
+        assert(childState.isInAState())
         guard let nextButton = nextButtons.first else {
-            assertionFailure("Must not get called when cannot advance")
-            return []
+            fatalError("Must not get called when cannot advance")
         }
         
         let nextNextButtons = nextButtons.dropFirst()
         let movements = buttonMap[button]![nextButton]!
-        var result: [State] = []
+        
+        var bestResult: State?
+        var bestResultLength: Int?
+        var stack: [State] = []
+        
         for movement in movements {
-            let nextState = childState.withNewMovements(movement + [.A])
-            for cascaded in nextState.advance(buttonMap: buttonMap) {
-                result.append(State(
-                    button: nextButton,
-                    nextButtons: nextNextButtons,
-                    childState: cascaded
-                ))
-            }
+            let nextState = childState.withNextButtons(movement + [.A])
+            stack.append(nextState.advance(buttonMap: buttonMap))
         }
-        return result
+        
+        while let state = stack.popLast() {
+            guard state.canAdvance else {
+                let moves = state.getRecorded()
+                if moves.count < bestResultLength ?? .max {
+                    bestResultLength = moves.count
+                    bestResult = state
+                }
+                continue
+            }
+            
+            if let bestResultLength, state.getRecorded().count >= bestResultLength {
+                // Not worth exploring this option further
+                continue
+            }
+            
+            stack.append(state.advance(buttonMap: buttonMap))
+        }
+        
+        return State(
+            layer: self.layer,
+            button: nextButton,
+            previousButton: self.button,
+            nextButtons: nextNextButtons,
+            childState: bestResult!,
+            recorded: self.recorded
+        )
     }
     
-    func withNewMovements(_ movements: [Button]) -> State {
-        assert(nextButtons.isEmpty)
-        if let childState {
-            return State(button: button, nextButtons: movements, childState: childState)
-        } else {
-            return State(button: button, nextButtons: movements, recorded: recorded)
-        }
-    }
     
     func getRecorded() -> [Button] {
         if let childState {
@@ -252,21 +288,77 @@ class State {
             return recorded
         }
     }
+    
+    
+    private
+    func isInAState() -> Bool {
+        guard self.button == .A else {
+            return false
+        }
+        
+        return self.childState?.isInAState() ?? true
+    }
+    
+    
+    private
+    func withNextButtons(_ buttons: [Button]) -> State {
+        assert(nextButtons.isEmpty)
+        return State(
+            layer: self.layer,
+            button: self.button,
+            previousButton: self.previousButton,
+            nextButtons: buttons,
+            childState: self.childState,
+            recorded: self.recorded
+        )
+    }
+    
+    
+    private
+    func withChildState(_ childState: State) -> State {
+        return State(
+            layer: self.layer,
+            button: self.button,
+            previousButton: self.previousButton,
+            nextButtons: self.nextButtons,
+            childState: childState,
+            recorded: self.recorded
+        )
+    }
+    
+    
+    private
+    func withRecord(_ button: Button) -> State {
+        assert(self.childState == nil)
+        assert(self.nextButtons.first == button)
+        return State(
+            layer: self.layer,
+            button: button,
+            previousButton: self.previousButton,
+            nextButtons: self.nextButtons.dropFirst(),
+            childState: nil,
+            recorded: self.recorded + [button]
+        )
+    }
+    
+}
+
+
+func generateStartState(buttons: [Button], layers: Int) -> State {
+    let leaf = State(layer: layers + 1)
+    var intermediate: State = leaf
+    
+    for i in stride(from: layers, through: 1, by: -1) {
+        let state = State(layer: i, childState: intermediate)
+        intermediate = state
+    }
+    
+    return State(layer: 0, nextButtons: buttons, childState: intermediate)
 }
 
 
 func calculateBestMovement(buttonMap: ButtonMap, buttons: [Button]) -> Int {
-    let start = State(
-        button: .A,
-        nextButtons: buttons,
-        childState: State(
-            button: .A, nextButtons: [], childState: State(
-                button: .A, nextButtons: [], childState: State(
-                    button: .A, nextButtons: [], recorded: []
-                )
-            )
-        )
-    )
+    let start = generateStartState(buttons: buttons, layers: 2)
     var fewestMoves: Int?
     var movesString = ""
     var stack: [State] = [start]
@@ -286,8 +378,7 @@ func calculateBestMovement(buttonMap: ButtonMap, buttons: [Button]) -> Int {
             continue
         }
         
-        let nextStates = state.advance(buttonMap: buttonMap)
-        stack.append(contentsOf: nextStates)
+        stack.append(state.advance(buttonMap: buttonMap))
     }
     
     print(movesString)
@@ -308,6 +399,7 @@ func calculateMultiplicator(sequence: [Button]) -> Int {
     
     return multi
 }
+
 
 runPart(.input) {
     (lines) in
