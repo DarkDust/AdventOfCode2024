@@ -9,13 +9,13 @@ import Foundation
 import AOCTools
 import RegexBuilder
 import Combine
+import Algorithms
 
 
 enum DayError: Error {
     case invalidInput(String)
     case invalidGate(String)
-    case invalidGateName(String)
-    case wireHasNoValue(String)
+    case fetchCycle
 }
 
 
@@ -43,71 +43,146 @@ enum Operation {
 }
 
 
-class Wire {
-    
+class Wire: Hashable, CustomDebugStringConvertible {
     let name: String
-    let output: PassthroughSubject<Bool, Never> = PassthroughSubject()
-    var value: Bool?
-    
-    var connection: AnyCancellable?
+    let digit: Int
+    var value = false
+    var gate: Gate?
     
     
     init(name: String) {
         self.name = name
-    }
-    
-    func connect(_ gate: Gate) {
-        self.connection = gate.output.sink {
-            self.value = $0
-            self.output.send($0)
+        
+        if let digit = Int(name.dropFirst()) {
+            self.digit = digit
+        } else {
+            self.digit = -1
         }
     }
     
-    func send(_ value: Bool) {
-        self.value = value
-        self.output.send(value)
+    func connect(_ gate: Gate) {
+        self.gate = gate
     }
     
+    func fetch(depth: Int) throws(DayError) -> Bool {
+        guard depth < 1000 else {
+            throw .fetchCycle
+        }
+        
+        guard let gate else { return self.value }
+        self.value = try gate.fetch(depth: depth + 1)
+        return self.value
+    }
+    
+    static func == (lhs: Wire, rhs: Wire) -> Bool {
+        lhs.name == rhs.name
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
+    
+    var debugDescription: String {
+        name
+    }
 }
 
 
 class Gate {
-    
     let operation: Operation
-    let output: PassthroughSubject<Bool, Never> = PassthroughSubject()
-    
-    var input1: PassthroughSubject<Bool, Never>?
-    var input2: PassthroughSubject<Bool, Never>?
-    var connection: AnyCancellable?
+    let input1: Wire
+    let input2: Wire
     
     
-    init(operation: Operation) {
+    init(operation: Operation, input1: Wire, input2: Wire) {
         self.operation = operation
+        self.input1 = input1
+        self.input2 = input2
     }
     
+    func fetch(depth: Int) throws(DayError) -> Bool {
+        operation.execute(
+            try input1.fetch(depth: depth + 1),
+            try input2.fetch(depth: depth + 1)
+        )
+    }
+}
+
+func getResult(wires: any Sequence<Wire>) throws(DayError) -> Int {
+    var result = 0
+    for wire in wires {
+        if try wire.fetch(depth: 0) {
+            result |= 1 << wire.digit
+        }
+    }
+    return result
+}
+
+func determineAddition(wireValues: [String: Bool]) -> (Int, Int, Int) {
+    var x = 0
+    var y = 0
     
-    func connect(_ wire: Wire) {
-        if let input1 {
-            input2 = wire.output
-            
-            let operation = self.operation
-            self.connection = input1.combineLatest(wire.output) {
-                operation.execute($0, $1)
-            }.sink {
-                self.output.send($0)
-            }
-            
-        } else {
-            input1 = wire.output
+    for (name, value) in wireValues {
+        guard let digit = Int(name.dropFirst()) else {
+            continue
+        }
+        
+        guard value else {
+            continue
+        }
+        
+        if name.hasPrefix("x") {
+            x |= 1 << digit
+        } else if name.hasPrefix("y") {
+            y |= 1 << digit
         }
     }
     
+    return (x, y, x+y)
+}
+
+func swapGates(_ wire1: Wire, _ wire2: Wire) {
+    guard let gate1 = wire1.gate, let gate2 = wire2.gate else {
+        return
+    }
+    
+    wire1.connect(gate2)
+    wire2.connect(gate1)
+}
+
+func swapUntilMatch(wires: [Wire], candidates: Set<Wire>, pairs: Int, expectedValue: Int) throws {
+    let output = wires.filter { $0.name.hasPrefix("z") }
+    
+    for combinations in candidates.permutations(ofCount: pairs * 2) {
+        for i in 0 ..< pairs {
+            let wire1 = combinations[i * 2]
+            let wire2 = combinations[i * 2 + 1]
+            
+            swapGates(wire1, wire2)
+        }
+        
+        do {
+            let result = try getResult(wires: output)
+            if result == expectedValue {
+                let names = combinations.map { $0.name }.sorted()
+                print("Fixed   : " + String(result, radix: 2))
+                print("Part 2  : " + names.joined(separator: ","))
+                return
+            }
+        } catch { }
+        
+        for i in 0 ..< pairs {
+            let wire1 = combinations[i * 2]
+            let wire2 = combinations[i * 2 + 1]
+            
+            swapGates(wire1, wire2)
+        }
+        
+    }
 }
 
 
-runPart(.input) {
-    (lines) in
-    
+func parse(lines: [Substring]) throws -> ([String: Wire], [String: Bool]) {
     let refWire1 = Reference<Substring>()
     let refWire2 = Reference<Substring>()
     let refOperation = Reference<Operation>()
@@ -182,7 +257,6 @@ runPart(.input) {
     }
     
     var wires: [String: Wire] = [:]
-    var gates: [Gate] = []
     func getWire(_ name: String) -> Wire {
         if let wire = wires[name] {
             return wire
@@ -196,32 +270,69 @@ runPart(.input) {
         let in1Wire = getWire(in1)
         let in2Wire = getWire(in2)
         
-        let gate = Gate(operation: operation)
-        gate.connect(in1Wire)
-        gate.connect(in2Wire)
+        let gate = Gate(operation: operation, input1: in1Wire, input2: in2Wire)
         getWire(out).connect(gate)
-        gates.append(gate)
     }
     
     for (name, value) in wireValues {
-        getWire(name).send(value)
+        getWire(name).value = value
     }
     
-    var result = 0
-    for (name, wire) in wires {
-        guard name.hasPrefix("z") else { continue }
-        
-        guard let digit = Int(name.dropFirst()) else {
-            throw DayError.invalidGateName(name)
-        }
-        guard let value = wire.value else {
-            throw DayError.wireHasNoValue(name)
-        }
-        
-        if value {
-            result |= 1 << digit
-        }
-    }
+    return (wires, wireValues)
+}
+
+
+runPart(.input) {
+    (lines) in
     
+    let (wires, _) = try parse(lines: lines)
+    let result = try getResult(wires: wires.values.filter { $0.name.hasPrefix("z") })
     print("Part 1: \(result)")
+}
+
+
+runPart(.input) {
+    (lines) in
+    
+    let (wires, wireValues) = try parse(lines: lines)
+    let outputWires = wires.values.filter { $0.name.hasPrefix("z") }
+    
+    let (x, y, sum) = determineAddition(wireValues: wireValues)
+    print("Expected: \(x) + \(y) = \(sum)")
+    print("Expected: \(String(sum, radix: 2))")
+        
+    let result = try getResult(wires: outputWires)
+    print("Have    : \(String(result, radix: 2))")
+    
+    // I tried to solve this programmatically but simply trying all combinations is of course much
+    // too expensive. Tried to find some heuristic to reduce the wires to investigate but didn't
+    // manage to reduce the numbers enough.
+    //
+    // In the end, I plotted the graph of the input using GraphViz, manually looking for incorrectly
+    // wired logic. Managed to identify three wrong connections this way. Then found the last one
+    // by printing the expected bit pattern, the output bit pattern, and the partially fixed bit
+    // pattern. This way I was able to narrow down where to search in the graph, finally indentified
+    // the last wrong connection.
+    //
+    // Verified that I got it right using the two code paths below (the later was part of an attempt
+    // to solve this problem programmatically.)
+    
+#if false
+    swapGates(wires["z12"]!, wires["kth"]!)
+    swapGates(wires["z26"]!, wires["gsd"]!)
+    swapGates(wires["z32"]!, wires["tbt"]!)
+    swapGates(wires["qnf"]!, wires["vpm"]!)
+    let result2 = try getResult(wires: outputWires)
+    print("Fixed   : \(String(result2, radix: 2))")
+#else
+    let check = ["z12", "kth", "z26", "gsd", "z32", "tbt", "qnf", "vpm"].map {
+        wires[$0]!
+    }
+    try swapUntilMatch(
+        wires: Array(wires.values),
+        candidates: Set(check),
+        pairs: 4,
+        expectedValue: sum
+    )
+#endif
 }

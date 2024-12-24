@@ -2,3 +2,5 @@
 .DS_Store
 *.pbxuser
 xcuserdata/
+**/*.dot
+**/*.pdf
